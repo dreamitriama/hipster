@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Hitster Musical</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+
+        /* Pantalla de categorías */
+        .categories {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .category-btn {
+            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 20px 15px;
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .category-btn.todas {
+            grid-column: 1 / -1;
+            background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        /* Pantalla de juego */
+        .game-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+        }
+
+        .question-type {
+            background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .timer-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .timer-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            animation: disco 0.5s infinite;
+        }
+
+        @keyframes disco {
+            0%, 100% { box-shadow: 0 0 30px currentColor; }
+            50% { box-shadow: 0 0 60px currentColor, 0 0 100px currentColor; }
+        }
+
+        .timer-green { background: linear-gradient(145deg, #00b894, #00cec9); color: #00b894; }
+        .timer-yellow { background: linear-gradient(145deg, #fdcb6e, #f39c12); color: #f39c12; }
+        .timer-orange { background: linear-gradient(145deg, #e17055, #d63031); color: #e17055; }
+        .timer-red { background: linear-gradient(145deg, #d63031, #c0392b); color: #d63031; animation: disco 0.2s infinite; }
+
+        .music-status {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            opacity: 0.8;
+        }
+
+        .spotify-link {
+            display: inline-block;
+            background: #1DB954;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .spotify-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(29, 185, 84, 0.4);
+        }
+
+        .btn {
+            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reveal {
+            background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-next {
+            background: linear-gradient(145deg, #00b894 0%, #00cec9 100%);
+        }
+
+        /* Pantalla de respuesta */
+        .answer-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+        }
+
+        .answer-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .answer-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .answer-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .answer-value.highlight {
+            color: #f5576c;
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            opacity: 0.7;
+            background: transparent;
+            border: 2px solid white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Instrucciones */
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de inicio -->
+        <div id="start-screen">
+            <h1>🎵 Hitster</h1>
+            <p class="subtitle">El juego musical para
+
+cuando se acaben las tarjetas</p>
+            
+            <div class="instructions">
+                <strong>¿Cómo jugar?</strong>
+                <ol>
+                    <li>Elige una categoría</li>
+                    <li>Abre el link de Spotify (¡sin mirar!)</li>
+                    <li>Escucha y adivina según la pregunta</li>
+                    <li>Cuando acabe el tiempo, se revela la respuesta</li>
+                </ol>
+            </div>
+
+            <p class="subtitle">Elige categoría:</p>
+            <div class="categories">
+                <button class="category-btn todas" onclick="startGame('todas')">
+                    <span class="category-icon">🎲</span>
+                    <span>TODAS</span>
+                </button>
+                <button class="category-btn" onclick="startGame('hits')">
+                    <span class="category-icon">🎵</span>
+                    <span>Hits</span>
+                </button>
+                <button class="category-btn" onclick="startGame('bso')">
+                    <span class="category-icon">🎬</span>
+                    <span>BSO Películas</span>
+                </button>
+                <button class="category-btn" onclick="startGame('disco')">
+                    <span class="category-icon">🕺</span>
+                    <span>Disco</span>
+                </button>
+                <button class="category-btn" onclick="startGame('rock')">
+                    <span class="category-icon">🎸</span>
+                    <span>Rock</span>
+                </button>
+                <button class="category-btn" onclick="startGame('pop_espanol')">
+                    <span class="category-icon">🇪🇸</span>
+                    <span>Pop Español</span>
+                </button>
+                <button class="category-btn" onclick="startGame('series')">
+                    <span class="category-icon">📺</span>
+                    <span>Series TV</span>
+                </button>
+                <button class="category-btn" onclick="startGame('80s')">
+                    <span class="category-icon">8️⃣</span>
+                    <span>Años 80</span>
+                </button>
+                <button class="category-btn" onclick="startGame('90s')">
+                    <span class="category-icon">9️⃣</span>
+                    <span>Años 90</span>
+                </button>
+                <button class="category-btn" onclick="startGame('2000s')">
+                    <span class="category-icon">0️⃣</span>
+                    <span>Años 2000</span>
+                </button>
+                <button class="category-btn" onclick="startGame('2010s')">
+                    <span class="category-icon">🔟</span>
+                    <span>Años 2010</span>
+                </button>
+                <button class="category-btn" onclick="startGame('rock_argentino')">
+                    <span class="category-icon">🇦🇷</span>
+                    <span>Rock Argentino</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de juego -->
+        <div id="game-screen" class="game-screen">
+            <div class="question-type" id="question-type">¿Año exacto?</div>
+            
+            <div class="timer-container">
+                <div class="timer-circle timer-green" id="timer-circle">
+                    <span id="timer-number">20</span>
+                </div>
+            </div>
+
+            <p class="music-status">🎧 ¡Escucha la canción!</p>
+            
+            <a id="spotify-link" class="spotify-link" href="#" target="_blank">
+                ▶️ Abrir en Spotify
+            </a>
+
+            <button class="btn btn-reveal" onclick="revealAnswer()">
+                Revelar respuesta
+            </button>
+        </div>
+
+        <!-- Pantalla de respuesta -->
+        <div id="answer-screen" class="answer-screen">
+            <h2>🎉 ¡Respuesta!</h2>
+            
+            <div class="answer-box">
+                <div class="answer-label">Canción</div>
+                <div class="answer-value" id="answer-title">-</div>
+                
+                <div class="answer-label">Artista</div>
+                <div class="answer-value" id="answer-artist">-</div>
+                
+                <div class="answer-label">Año</div>
+                <div class="answer-value highlight" id="answer-year">-</div>
+                
+                <div class="answer-label">Década</div>
+                <div class="answer-value" id="answer-decade">-</div>
+            </div>
+
+            <button class="btn btn-next" onclick="nextSong()">
+                🎵 Siguiente canción
+            </button>
+            
+            <button class="btn back-btn" onclick="backToCategories()">
+                ← Cambiar categoría
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de canciones
+        const songs = {
+            hits: [
+                { title: "Billie Jean", artist: "Michael Jackson", year: 1983, spotify: "https://open.spotify.com/track/5ChkMS8OtdzJeqyybCc9R5" },
+                { title: "Bohemian Rhapsody", artist: "Queen", year: 1975, spotify: "https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J" },
+                { title: "Like a Prayer", artist: "Madonna", year: 1989, spotify: "https://open.spotify.com/track/1z3ugFmUKoCzGsI6jdY4Ci" },
+                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T" },
+                { title: "I Will Always Love You", artist: "Whitney Houston", year: 1992, spotify: "https://open.spotify.com/track/4eHbdreAnSOrDDsFfc4Fpm" },
+                { title: "Shape of You", artist: "Ed Sheeran", year: 2017, spotify: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3" },
+                { title: "Rolling in the Deep", artist: "Adele", year: 2010, spotify: "https://open.spotify.com/track/1c8gk2PeTE04A1pIDH9YMk" },
+                { title: "Uptown Funk", artist: "Bruno Mars", year: 2014, spotify: "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS" },
+                { title: "Hey Jude", artist: "The Beatles", year: 1968, spotify: "https://open.spotify.com/track/0aym2LBJBk9DAYuHHutrIl" },
+                { title: "Hotel California", artist: "Eagles", year: 1977, spotify: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" },
+                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51" },
+                { title: "Thriller", artist: "Michael Jackson", year: 1982, spotify: "https://open.spotify.com/track/2LlQb7Uoj1kKyGhlkBf9aC" },
+                { title: "Don't Stop Believin'", artist: "Journey", year: 1981, spotify: "https://open.spotify.com/track/4bHsxqR3GMrXTxEPLuK5ue" },
+                { title: "Wonderwall", artist: "Oasis", year: 1995, spotify: "https://open.spotify.com/track/1qPbGZqppFwLwcBC1JQ6Vr" },
+                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF" },
+                { title: "Take On Me", artist: "a-ha", year: 1985, spotify: "https://open.spotify.com/track/2WfaOiMkCvy7F5fcp2zZ8L" },
+                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH" },
+                { title: "Every Breath You Take", artist: "The Police", year: 1983, spotify: "https://open.spotify.com/track/1JSTJqkT5qHq8MDJnJbRE1" },
+                { title: "Imagine", artist: "John Lennon", year: 1971, spotify: "https://open.spotify.com/track/7pKfPomDEeI4TPT6EOYjn9" },
+                { title: "Blinding Lights", artist: "The Weeknd", year: 2019, spotify: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b" },
+                { title: "Bad Guy", artist: "Billie Eilish", year: 2019, spotify: "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m" },
+                { title: "Despacito", artist: "Luis Fonsi", year: 2017, spotify: "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb" },
+                { title: "Waka Waka", artist: "Shakira", year: 2010, spotify: "https://open.spotify.com/track/2Cd9iWfcOpGDHLz6tVA3G0" },
+                { title: "Hips Don't Lie", artist: "Shakira", year: 2006, spotify: "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V" },
+                { title: "Crazy in Love", artist: "Beyoncé", year: 2003, spotify: "https://open.spotify.com/track/5IVuqXILoxVWvWEPm82Jxr" },
+                { title: "Since U Been Gone", artist: "Kelly Clarkson", year: 2004, spotify: "https://open.spotify.com/track/3gTbF1Ftr9QPc5WoRqGVLO" },
+                { title: "Mr. Brightside", artist: "The Killers", year: 2003, spotify: "https://open.spotify.com/track/003vvx7Niy0yvhvHt4a68B" },
+                { title: "Toxic", artist: "Britney Spears", year: 2004, spotify: "https://open.spotify.com/track/6I9VzXrHxO9rA9A5euc8Ak" },
+                { title: "Can't Get You Out of My Head", artist: "Kylie Minogue", year: 2001, spotify: "https://open.spotify.com/track/6JV2JOEocMgcZxYSZelKcc" },
+                { title: "Umbrella", artist: "Rihanna", year: 2007, spotify: "https://open.spotify.com/track/2VxeLyX666F8uXCJ0dZF8B" }
+            ],
+            bso: [
+                { title: "My Heart Will Go On", artist: "Celine Dion", year: 1997, spotify: "https://open.spotify.com/track/33LC84JgLvK2KuW43MfaNq" },
+                { title: "Eye of the Tiger", artist: "Survivor", year: 1982, spotify: "https://open.spotify.com/track/2KH16WveTQWT6KOG9Rg6e2" },
+                { title: "I Will Always Love You", artist: "Whitney Houston", year: 1992, spotify: "https://open.spotify.com/track/4eHbdreAnSOrDDsFfc4Fpm" },
+                { title: "Hakuna Matata", artist: "El Rey León", year: 1994, spotify: "https://open.spotify.com/track/4pJLkSLQljKoJJZhmwnl3D" },
+                { title: "Let It Go", artist: "Idina Menzel", year: 2013, spotify: "https://open.spotify.com/track/0qcr5FMsEO85NAQjrlDRKo" },
+                { title: "Shallow", artist: "Lady Gaga & Bradley Cooper", year: 2018, spotify: "https://open.spotify.com/track/2VxeLyX666F8uXCJ0dZF8B" },
+                { title: "Lose Yourself", artist: "Eminem", year: 2002, spotify: "https://open.spotify.com/track/7w9bgPAmPTtrkt2v16QWvQ" },
+                { title: "Footloose", artist: "Kenny Loggins", year: 1984, spotify: "https://open.spotify.com/track/3V8gOHxxPRsW6sHcWW2uhP" },
+                { title: "Ghostbusters", artist: "Ray Parker Jr.", year: 1984, spotify: "https://open.spotify.com/track/3m0y8qLoznUYi73SUBP8GI" },
+                { title: "Take My Breath Away", artist: "Berlin", year: 1986, spotify: "https://open.spotify.com/track/4VMYDCV2IfdHAt3X7KHz63" },
+                { title: "Don't You Forget About Me", artist: "Simple Minds", year: 1985, spotify: "https://open.spotify.com/track/0WqIKmW4BTrj3eJFmnCKMv" },
+                { title: "What a Feeling", artist: "Irene Cara", year: 1983, spotify: "https://open.spotify.com/track/6sKQT4OQ0MNhf7yPCaCY1h" },
+                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH" },
+                { title: "A Whole New World", artist: "Aladdin", year: 1992, spotify: "https://open.spotify.com/track/4ByMJgJvKspuT0HoMk8HMO" },
+                { title: "Circle of Life", artist: "El Rey León", year: 1994, spotify: "https://open.spotify.com/track/2DSKI14HWMqyWXZRaASlqh" },
+                { title: "Beauty and the Beast", artist: "Celine Dion & Peabo Bryson", year: 1991, spotify: "https://open.spotify.com/track/1Xqe4Z4mNUYCQ1kEhWB7id" },
+                { title: "Hedwig's Theme", artist: "John Williams", year: 2001, spotify: "https://open.spotify.com/track/1n8NKQRg8HXBKZ1VpXRman" },
+                { title: "The Imperial March", artist: "John Williams", year: 1980, spotify: "https://open.spotify.com/track/1KrjnJAPBkEbk48xFHpUSn" },
+                { title: "Mamma Mia", artist: "ABBA", year: 2008, spotify: "https://open.spotify.com/track/5qW5dPHvPdKsigNuBiVLpW" },
+                { title: "Unchained Melody", artist: "Righteous Brothers", year: 1990, spotify: "https://open.spotify.com/track/1Cwn8R3HWJPvZEODghYhhD" },
+                { title: "Summer Nights", artist: "Grease", year: 1978, spotify: "https://open.spotify.com/track/5rPT2GILnFl5D5kbYSGJbV" },
+                { title: "You're The One That I Want", artist: "Grease", year: 1978, spotify: "https://open.spotify.com/track/2I9P2XSDFBL7kldaPZmVsG" },
+                { title: "Time of My Life", artist: "Dirty Dancing", year: 1987, spotify: "https://open.spotify.com/track/3eT3MIZhT67U6e5S0N8Efj" },
+                { title: "Skyfall", artist: "Adele", year: 2012, spotify: "https://open.spotify.com/track/6VObnIkLVruX4UVyxWhlqm" },
+                { title: "Happy", artist: "Pharrell Williams", year: 2013, spotify: "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH" }
+            ],
+            disco: [
+                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH" },
+                { title: "I Will Survive", artist: "Gloria Gaynor", year: 1978, spotify: "https://open.spotify.com/track/5VGlqQANWDKJFl0MBG3sg2" },
+                { title: "Le Freak", artist: "Chic", year: 1978, spotify: "https://open.spotify.com/track/1Sl1w9DOQMfGM2U8daPi2M" },
+                { title: "September", artist: "Earth, Wind & Fire", year: 1978, spotify: "https://open.spotify.com/track/7Cuk8SF1N593L0ms2FQnR0" },
+                { title: "Don't Stop 'Til You Get Enough", artist: "Michael Jackson", year: 1979, spotify: "https://open.spotify.com/track/46eu3SBuFCXWsPT39Yg3tJ" },
+                { title: "Boogie Wonderland", artist: "Earth, Wind & Fire", year: 1979, spotify: "https://open.spotify.com/track/2vfCFsWrCL9TNj2DvJKsRQ" },
+                { title: "Y.M.C.A.", artist: "Village People", year: 1978, spotify: "https://open.spotify.com/track/0M9HHT9UiBLmLfNfJevRaG" },
+                { title: "Funkytown", artist: "Lipps Inc", year: 1980, spotify: "https://open.spotify.com/track/7u5pkFEWAGV2dHBgTFOZHI" },
+                { title: "Hot Stuff", artist: "Donna Summer", year: 1979, spotify: "https://open.spotify.com/track/2fSaE6BVuC2Y9aPSFVlKdU" },
+                { title: "Bad Girls", artist: "Donna Summer", year: 1979, spotify: "https://open.spotify.com/track/1Xx8D0dNUxKzBZPiB1CqbP" },
+                { title: "Ring My Bell", artist: "Anita Ward", year: 1979, spotify: "https://open.spotify.com/track/2HQCKrw2lYMZ7xKPH9kkol" },
+                { title: "Car Wash", artist: "Rose Royce", year: 1976, spotify: "https://open.spotify.com/track/65TA0G1jfIEsOg3W2dllRs" },
+                { title: "Night Fever", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/5uwVRdGaKzzzlWakSJGq3m" },
+                { title: "More Than a Woman", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/4XY0EaGp0lCzPoG0Py7wuX" },
+                { title: "Disco Inferno", artist: "The Trammps", year: 1976, spotify: "https://open.spotify.com/track/5XqQPIBPHxXFBaXKfj5JYb" },
+                { title: "Get Down Tonight", artist: "KC and the Sunshine Band", year: 1975, spotify: "https://open.spotify.com/track/3aXgFnYB8Lm0MlJPo3Bzuh" },
+                { title: "That's the Way I Like It", artist: "KC and the Sunshine Band", year: 1975, spotify: "https://open.spotify.com/track/5F3U4iRXRPhZJoQVu8kmEr" },
+                { title: "Dancing Queen", artist: "ABBA", year: 1976, spotify: "https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr" },
+                { title: "Gimme! Gimme! Gimme!", artist: "ABBA", year: 1979, spotify: "https://open.spotify.com/track/4EpdLJiyWuoJiA0NzDJ54Q" },
+                { title: "Rasputin", artist: "Boney M", year: 1978, spotify: "https://open.spotify.com/track/4vG8oYJFvNXLJhDZSYjjPE" },
+                { title: "Rivers of Babylon", artist: "Boney M", year: 1978, spotify: "https://open.spotify.com/track/2HLLhCWF6BHKkbK8Kx8w2c" },
+                { title: "Daddy Cool", artist: "Boney M", year: 1976, spotify: "https://open.spotify.com/track/1m8mvUjTwV4k3qaVxuaX8K" },
+                { title: "We Are Family", artist: "Sister Sledge", year: 1979, spotify: "https://open.spotify.com/track/1L5pKsZL6H4VHjDHqq4xRf" },
+                { title: "Last Dance", artist: "Donna Summer", year: 1978, spotify: "https://open.spotify.com/track/0JSyQWxF2QJc5GEAgDZR6Y" },
+                { title: "I Love the Nightlife", artist: "Alicia Bridges", year: 1978, spotify: "https://open.spotify.com/track/1WxG9V2i0Wv8mBf3Ke7BbS" }
+            ],
+            rock: [
+                { title: "Bohemian Rhapsody", artist: "Queen", year: 1975, spotify: "https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J" },
+                { title: "Stairway to Heaven", artist: "Led Zeppelin", year: 1971, spotify: "https://open.spotify.com/track/5CQ30WqJwcep0pYcV4AMNc" },
+                { title: "Hotel California", artist: "Eagles", year: 1977, spotify: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" },
+                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51" },
+                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T" },
+                { title: "Back in Black", artist: "AC/DC", year: 1980, spotify: "https://open.spotify.com/track/08mG3Y1vljYA6bvDt4Wqkj" },
+                { title: "Highway to Hell", artist: "AC/DC", year: 1979, spotify: "https://open.spotify.com/track/2zYzyRzz6pRmhPzyfMEC8s" },
+                { title: "Thunderstruck", artist: "AC/DC", year: 1990, spotify: "https://open.spotify.com/track/57bgtoPSgt236HzfBOd8kj" },
+                { title: "Enter Sandman", artist: "Metallica", year: 1991, spotify: "https://open.spotify.com/track/3VqHuw0wFlIHcIPWkhIbdQ" },
+                { title: "Nothing Else Matters", artist: "Metallica", year: 1991, spotify: "https://open.spotify.com/track/0nLiqZ6A27jJri2VCalIUs" },
+                { title: "Paradise City", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/2GF3cUfr0RQGb7xqua0r4x" },
+                { title: "Welcome to the Jungle", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/0G21hzSdgOY5PHIAVBohAJ" },
+                { title: "November Rain", artist: "Guns N' Roses", year: 1991, spotify: "https://open.spotify.com/track/3YRCqOhFifThpSRFJ1VWFM" },
+                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF" },
+                { title: "It's My Life", artist: "Bon Jovi", year: 2000, spotify: "https://open.spotify.com/track/0v1XpBHnsbkCn7iJ9Ucr1l" },
+                { title: "We Will Rock You", artist: "Queen", year: 1977, spotify: "https://open.spotify.com/track/54flyrjcdnQdco2300avMJ" },
+                { title: "We Are the Champions", artist: "Queen", year: 1977, spotify: "https://open.spotify.com/track/7ccI9cStQbQdystvc6TvxD" },
+                { title: "Another One Bites the Dust", artist: "Queen", year: 1980, spotify: "https://open.spotify.com/track/5vdp5UmvTsnMEMESIF2Ym7" },
+                { title: "Don't Stop Believin'", artist: "Journey", year: 1981, spotify: "https://open.spotify.com/track/4bHsxqR3GMrXTxEPLuK5ue" },
+                { title: "Every Breath You Take", artist: "The Police", year: 1983, spotify: "https://open.spotify.com/track/1JSTJqkT5qHq8MDJnJbRE1" },
+                { title: "The Final Countdown", artist: "Europe", year: 1986, spotify: "https://open.spotify.com/track/2d4e45fmUnguxh6yqC7gNT" },
+                { title: "Eye of the Tiger", artist: "Survivor", year: 1982, spotify: "https://open.spotify.com/track/2KH16WveTQWT6KOG9Rg6e2" },
+                { title: "Smoke on the Water", artist: "Deep Purple", year: 1972, spotify: "https://open.spotify.com/track/4DdkRBBYG2JF3xwCUgAB0s" },
+                { title: "Whole Lotta Love", artist: "Led Zeppelin", year: 1969, spotify: "https://open.spotify.com/track/0hCB0YR03f6AmQaHbwWDe8" },
+                { title: "Comfortably Numb", artist: "Pink Floyd", year: 1979, spotify: "https://open.spotify.com/track/7F02x6EKYIQV3VcTaTm7oN" }
+            ],
+            pop_espanol: [
+                { title: "La Bamba", artist: "Los Lobos", year: 1987, spotify: "https://open.spotify.com/track/3GSPCsE5z3sE0nRWgAoSlp" },
+                { title: "Bailando", artist: "Enrique Iglesias", year: 2014, spotify: "https://open.spotify.com/track/6YZdkObH88nLfgjWLbppZC" },
+                { title: "La Tortura", artist: "Shakira", year: 2005, spotify: "https://open.spotify.com/track/1hWq0gtvzRDMZm1GIEa7zM" },
+                { title: "Corazón Partío", artist: "Alejandro Sanz", year: 1997, spotify: "https://open.spotify.com/track/6Qqludb7VuQYT3m3IgSfL8" },
+                { title: "La Flaca", artist: "Jarabe de Palo", year: 1996, spotify: "https://open.spotify.com/track/4fGkvhUXOHMkl5LVQCU7fE" },
+                { title: "Entre Dos Aguas", artist: "Paco de Lucía", year: 1973, spotify: "https://open.spotify.com/track/0DwvGNjzRsVHMxL2McBlMt" },
+                { title: "Eres Tú", artist: "Mocedades", year: 1973, spotify: "https://open.spotify.com/track/6qPHiMf3K9V6iV6h2zLc1L" },
+                { title: "Un Beso y Una Flor", artist: "Nino Bravo", year: 1972, spotify: "https://open.spotify.com/track/1J9m6YURIJhxZvFTvCY1FR" },
+                { title: "Me Colé en una Fiesta", artist: "Mecano", year: 1982, spotify: "https://open.spotify.com/track/1qvGLgBIMNvMJFSoaD46Rc" },
+                { title: "Hijo de la Luna", artist: "Mecano", year: 1986, spotify: "https://open.spotify.com/track/38bKAFmWo0sQ78R3g9Sghp" },
+                { title: "Mujer Contra Mujer", artist: "Mecano", year: 1988, spotify: "https://open.spotify.com/track/1dNjhkPVCvp2zO0MJ0DHp8" },
+                { title: "La Macarena", artist: "Los del Río", year: 1993, spotify: "https://open.spotify.com/track/5YDaWQZ3dB9yH4dXOOvQZP" },
+                { title: "Aserejé", artist: "Las Ketchup", year: 2002, spotify: "https://open.spotify.com/track/1yd7bqm2h5vfqsJKz8F3rI" },
+                { title: "La Camisa Negra", artist: "Juanes", year: 2005, spotify: "https://open.spotify.com/track/5ASYP85QPKkGJOr7O8TI6e" },
+                { title: "Vivir Mi Vida", artist: "Marc Anthony", year: 2013, spotify: "https://open.spotify.com/track/295vVlmIZvjMXIYlxRwPDR" },
+                { title: "Volver", artist: "Estrella Morente", year: 2006, spotify: "https://open.spotify.com/track/2OQfYf5H2S1bHDFT3vOmh2" },
+                { title: "Amiga Mía", artist: "Alejandro Sanz", year: 1996, spotify: "https://open.spotify.com/track/7rpuQa9DM0zolppMYbVAJP" },
+                { title: "Baila Morena", artist: "Zucchero & Julio Iglesias", year: 1996, spotify: "https://open.spotify.com/track/5sxWeTXyTn9a8RkMRhcCMl" },
+                { title: "La Raja de Tu Falda", artist: "Estopa", year: 1999, spotify: "https://open.spotify.com/track/0Wy0SwKqXIU9KMhHnlnJ0i" },
+                { title: "Tu Calorro", artist: "Estopa", year: 1999, spotify: "https://open.spotify.com/track/5vOOZ6qJrG2EAYJ6B3zqwx" },
+                { title: "Volando Voy", artist: "Camarón", year: 1979, spotify: "https://open.spotify.com/track/6BpQoQILwJxLt7h7T8vAB7" },
+                { title: "Entre Sobras y Sobras Me Faltas", artist: "Antonio Orozco", year: 2020, spotify: "https://open.spotify.com/track/7FGq80cy5nNdh3rtpzmVd7" },
+                { title: "Quédate Conmigo", artist: "Pastora Soler", year: 2012, spotify: "https://open.spotify.com/track/5HFW5X0pT9CnMiKbOUQJBK" },
+                { title: "Quisiera Ser", artist: "Alejandro Sanz", year: 2000, spotify: "https://open.spotify.com/track/4mJwx35RfR5a2BIQQL3XlH" },
+                { title: "Cuando Nadie Me Ve", artist: "Alejandro Sanz", year: 2003, spotify: "https://open.spotify.com/track/5ZULwpFYzCRoJKPTKmR8bp" }
+            ],
+            series: [
+                { title: "Theme from Friends", artist: "The Rembrandts", year: 1995, spotify: "https://open.spotify.com/track/1qCQTy0fTXerET4x8VHyr9" },
+                { title: "Game of Thrones Theme", artist: "Ramin Djawadi", year: 2011, spotify: "https://open.spotify.com/track/0Gu8YGvvjF7BNV3HKU9RPI" },
+                { title: "The Simpsons Theme", artist: "Danny Elfman", year: 1989, spotify: "https://open.spotify.com/track/4cYR3HaYRTqZjyZHJilZPY" },
+                { title: "Stranger Things Theme", artist: "Kyle Dixon & Michael Stein", year: 2016, spotify: "https://open.spotify.com/track/0bPrEFE6Kwy9j7Ruhv5xYa" },
+                { title: "The Office Theme", artist: "The Scrantones", year: 2005, spotify: "https://open.spotify.com/track/0DyHKCMd2NPECUDa5LSDN4" },
+                { title: "Breaking Bad Theme", artist: "Dave Porter", year: 2008, spotify: "https://open.spotify.com/track/4QYRTAB7Vt21hNmJ0JWaH7" },
+                { title: "The X-Files Theme", artist: "Mark Snow", year: 1993, spotify: "https://open.spotify.com/track/3txthC3HJe6Bai0L3zGZRF" },
+                { title: "Twin Peaks Theme", artist: "Angelo Badalamenti", year: 1990, spotify: "https://open.spotify.com/track/3wk60laSsVEMOv6QIHW4DE" },
+                { title: "Miami Vice Theme", artist: "Jan Hammer", year: 1985, spotify: "https://open.spotify.com/track/6XDwvn8kfVfEYmfj4cYO5A" },
+                { title: "The Fresh Prince Theme", artist: "Will Smith", year: 1990, spotify: "https://open.spotify.com/track/1234567890" },
+                { title: "Cheers Theme", artist: "Gary Portnoy", year: 1982, spotify: "https://open.spotify.com/track/2u0Lz0EvpDoY4PvxiVKhqB" },
+                { title: "Pink Panther Theme", artist: "Henry Mancini", year: 1963, spotify: "https://open.spotify.com/track/1rq26GlqJiVsLEq8lXFLQs" },
+                { title: "Mission Impossible Theme", artist: "Lalo Schifrin", year: 1966, spotify: "https://open.spotify.com/track/3lE2p8SN9A0kzfUvTltYqo" },
+                { title: "House M.D. Theme", artist: "Massive Attack", year: 2004, spotify: "https://open.spotify.com/track/7IsWA9YKQQ0MN0ycf6tqJa" },
+                { title: "The Mandalorian Theme", artist: "Ludwig Göransson", year: 2019, spotify: "https://open.spotify.com/track/0zRcvCVwLtBjLuWxepLwBh" },
+                { title: "Peaky Blinders Theme", artist: "Nick Cave", year: 2013, spotify: "https://open.spotify.com/track/1GhPHrq36VKCY3ucVaZCfo" },
+                { title: "Money Heist - Bella Ciao", artist: "Varios", year: 2017, spotify: "https://open.spotify.com/track/2JL3Xt1bKPgVPU0oqcbOXA" },
+                { title: "Narcos Theme", artist: "Rodrigo Amarante", year: 2015, spotify: "https://open.spotify.com/track/0R9CM8IOuNBMOGnJRqLgSv" },
+                { title: "Westworld Theme", artist: "Ramin Djawadi", year: 2016, spotify: "https://open.spotify.com/track/2zzPjQFAV1vmWoMvzVCkAR" },
+                { title: "The Crown Theme", artist: "Hans Zimmer", year: 2016, spotify: "https://open.spotify.com/track/1hy6EhKCYLjLKQSXQGdMZL" }
+            ],
+            "80s": [
+                { title: "Take On Me", artist: "a-ha", year: 1985, spotify: "https://open.spotify.com/track/2WfaOiMkCvy7F5fcp2zZ8L" },
+                { title: "Billie Jean", artist: "Michael Jackson", year: 1983, spotify: "https://open.spotify.com/track/5ChkMS8OtdzJeqyybCc9R5" },
+                { title: "Like a Virgin", artist: "Madonna", year: 1984, spotify: "https://open.spotify.com/track/1ZPlNanZsJSPK5h9YZZEsT" },
+                { title: "Sweet Dreams", artist: "Eurythmics", year: 1983, spotify: "https://open.spotify.com/track/1TfqLAPs4K3s2rJMoCokcS" },
+                { title: "Every Breath You Take", artist: "The Police", year: 1983, spotify: "https://open.spotify.com/track/1JSTJqkT5qHq8MDJnJbRE1" },
+                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF" },
+                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51" },
+                { title: "Africa", artist: "Toto", year: 1982, spotify: "https://open.spotify.com/track/2374M0fQpWi3dLnB54qaLX" },
+                { title: "Total Eclipse of the Heart", artist: "Bonnie Tyler", year: 1983, spotify: "https://open.spotify.com/track/6N6NE9vNbpWEcE8uEYST7u" },
+                { title: "I Wanna Dance with Somebody", artist: "Whitney Houston", year: 1987, spotify: "https://open.spotify.com/track/2tUBqZG2AbRi7Q0BIrVrEj" },
+                { title: "Jump", artist: "Van Halen", year: 1984, spotify: "https://open.spotify.com/track/7N4B4gBpCGUoAlbJgFdKXb" },
+                { title: "The Final Countdown", artist: "Europe", year: 1986, spotify: "https://open.spotify.com/track/2d4e45fmUnguxh6yqC7gNT" },
+                { title: "Girls Just Want to Have Fun", artist: "Cyndi Lauper", year: 1983, spotify: "https://open.spotify.com/track/4y1LsJpmMti1PfRQV9AWWe" },
+                { title: "Purple Rain", artist: "Prince", year: 1984, spotify: "https://open.spotify.com/track/54X78diSLoUDI3joC2bjMz" },
+                { title: "Beat It", artist: "Michael Jackson", year: 1983, spotify: "https://open.spotify.com/track/3BovdzfHi4Xqy3kASkNkHb" },
+                { title: "Thriller", artist: "Michael Jackson", year: 1982, spotify: "https://open.spotify.com/track/2LlQb7Uoj1kKyGhlkBf9aC" },
+                { title: "Blue Monday", artist: "New Order", year: 1983, spotify: "https://open.spotify.com/track/0WQiDwKJclirSYG9v5tayI" },
+                { title: "Don't You Want Me", artist: "The Human League", year: 1981, spotify: "https://open.spotify.com/track/3m7dKVzeGW9WBWaPUowLgB" },
+                { title: "Tainted Love", artist: "Soft Cell", year: 1981, spotify: "https://open.spotify.com/track/3D6CnAGtAwF1tWiMu4HXV3" },
+                { title: "Karma Chameleon", artist: "Culture Club", year: 1983, spotify: "https://open.spotify.com/track/2zHiPzCAiZBdnLwNOBcUT3" },
+                { title: "Wake Me Up Before You Go-Go", artist: "Wham!", year: 1984, spotify: "https://open.spotify.com/track/0ikz6tENMONtK6qGkOrU3c" },
+                { title: "Never Gonna Give You Up", artist: "Rick Astley", year: 1987, spotify: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT" },
+                { title: "I Love Rock 'n' Roll", artist: "Joan Jett", year: 1981, spotify: "https://open.spotify.com/track/3TVR1d1dXkc1K7wEhEljFH" },
+                { title: "Time After Time", artist: "Cyndi Lauper", year: 1984, spotify: "https://open.spotify.com/track/2DnJjbjNTV9Nd5NOa1KGba" },
+                { title: "Don't Stop Believin'", artist: "Journey", year: 1981, spotify: "https://open.spotify.com/track/4bHsxqR3GMrXTxEPLuK5ue" }
+            ],
+            "90s": [
+                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T" },
+                { title: "Wonderwall", artist: "Oasis", year: 1995, spotify: "https://open.spotify.com/track/1qPbGZqppFwLwcBC1JQ6Vr" },
+                { title: "Creep", artist: "Radiohead", year: 1992, spotify: "https://open.spotify.com/track/70LcF31zb1H0PyJoS1Sx1r" },
+                { title: "Losing My Religion", artist: "R.E.M.", year: 1991, spotify: "https://open.spotify.com/track/31AOj9sFz2gM0O3hMARRBx" },
+                { title: "No Diggity", artist: "Blackstreet", year: 1996, spotify: "https://open.spotify.com/track/5HFZDYK7LrKRm85pORyuDV" },
+                { title: "...Baby One More Time", artist: "Britney Spears", year: 1998, spotify: "https://open.spotify.com/track/3MjUtNVVq3C8Fn0MP3zhXa" },
+                { title: "Wannabe", artist: "Spice Girls", year: 1996, spotify: "https://open.spotify.com/track/1Je1IMUlBXcx1Fz0WE7oPT" },
+                { title: "I Want It That Way", artist: "Backstreet Boys", year: 1999, spotify: "https://open.spotify.com/track/47BBI51FKFwOMlIiX6m8ya" },
+                { title: "Livin' la Vida Loca", artist: "Ricky Martin", year: 1999, spotify: "https://open.spotify.com/track/4VI0SLOYjGJTQFDI0TEFqS" },
+                { title: "MMMBop", artist: "Hanson", year: 1997, spotify: "https://open.spotify.com/track/3vy8PdPFYMH9R59qhCp6jP" },
+                { title: "Iris", artist: "Goo Goo Dolls", year: 1998, spotify: "https://open.spotify.com/track/6Qyc6fS4DsZjB2mRW9DsQs" },
+                { title: "Black Hole Sun", artist: "Soundgarden", year: 1994, spotify: "https://open.spotify.com/track/1KvKj8iEN05mreSEimQqBT" },
+                { title: "Bitter Sweet Symphony", artist: "The Verve", year: 1997, spotify: "https://open.spotify.com/track/3EYOJ4WhYZODsyEcpRsnfS" },
+                { title: "No Scrubs", artist: "TLC", year: 1999, spotify: "https://open.spotify.com/track/5lnQLEUiVDkLbFJHXHQu9m" },
+                { title: "Waterfalls", artist: "TLC", year: 1995, spotify: "https://open.spotify.com/track/6MHOr75TOlLCvaJcPULzPA" },
+                { title: "Under the Bridge", artist: "Red Hot Chili Peppers", year: 1992, spotify: "https://open.spotify.com/track/3d9DChrdc6BOeFsbrZ3Is0" },
+                { title: "Zombie", artist: "The Cranberries", year: 1994, spotify: "https://open.spotify.com/track/7d3m4Pp7HfVlmZvmWWHbHw" },
+                { title: "Dreams", artist: "The Cranberries", year: 1993, spotify: "https://open.spotify.com/track/61BHQRN9WgYoovlmXZB5Pf" },
+                { title: "Vogue", artist: "Madonna", year: 1990, spotify: "https://open.spotify.com/track/7cP1G1d1xFSJvH3HCfDjEg" },
+                { title: "U Can't Touch This", artist: "MC Hammer", year: 1990, spotify: "https://open.spotify.com/track/1YjkljlGk35F6hjSh0U7lJ" },
+                { title: "Ice Ice Baby", artist: "Vanilla Ice", year: 1990, spotify: "https://open.spotify.com/track/3XVozq1aeqsJwpXrEZrDJ9" },
+                { title: "My Heart Will Go On", artist: "Celine Dion", year: 1997, spotify: "https://open.spotify.com/track/33LC84JgLvK2KuW43MfaNq" },
+                { title: "All Star", artist: "Smash Mouth", year: 1999, spotify: "https://open.spotify.com/track/3cfOd4CMv2snFaKAnMdnvK" },
+                { title: "Pretty Fly for a White Guy", artist: "The Offspring", year: 1998, spotify: "https://open.spotify.com/track/13urMzLBJAKVAe2Yn8l9L7" },
+                { title: "Torn", artist: "Natalie Imbruglia", year: 1997, spotify: "https://open.spotify.com/track/2hkfv9HxntT1aYdXQxBnH7" }
+            ],
+            "2000s": [
+                { title: "Crazy in Love", artist: "Beyoncé", year: 2003, spotify: "https://open.spotify.com/track/5IVuqXILoxVWvWEPm82Jxr" },
+                { title: "In Da Club", artist: "50 Cent", year: 2003, spotify: "https://open.spotify.com/track/6hxqYv7BZsEHaVCWRaH4Z8" },
+                { title: "Hey Ya!", artist: "OutKast", year: 2003, spotify: "https://open.spotify.com/track/2PpruBYCo4H7WOBJ7Q2EwM" },
+                { title: "Mr. Brightside", artist: "The Killers", year: 2003, spotify: "https://open.spotify.com/track/003vvx7Niy0yvhvHt4a68B" },
+                { title: "Since U Been Gone", artist: "Kelly Clarkson", year: 2004, spotify: "https://open.spotify.com/track/3gTbF1Ftr9QPc5WoRqGVLO" },
+                { title: "Toxic", artist: "Britney Spears", year: 2004, spotify: "https://open.spotify.com/track/6I9VzXrHxO9rA9A5euc8Ak" },
+                { title: "Yeah!", artist: "Usher", year: 2004, spotify: "https://open.spotify.com/track/3CSpwSzpGfTqIvVIxHaZss" },
+                { title: "Hips Don't Lie", artist: "Shakira", year: 2006, spotify: "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V" },
+                { title: "Umbrella", artist: "Rihanna", year: 2007, spotify: "https://open.spotify.com/track/2VxeLyX666F8uXCJ0dZF8B" },
+                { title: "Poker Face", artist: "Lady Gaga", year: 2008, spotify: "https://open.spotify.com/track/5R8dQOPq8haW1NHXpOqcF8" },
+                { title: "Single Ladies", artist: "Beyoncé", year: 2008, spotify: "https://open.spotify.com/track/5R8dQOPq8haW1VKXpOqcF8" },
+                { title: "I Gotta Feeling", artist: "Black Eyed Peas", year: 2009, spotify: "https://open.spotify.com/track/1b0Y6nNVDq3xKAxQKN7Wzu" },
+                { title: "Clocks", artist: "Coldplay", year: 2002, spotify: "https://open.spotify.com/track/0BCPKOYdS2jbQ8iyB56Cpo" },
+                { title: "The Scientist", artist: "Coldplay", year: 2002, spotify: "https://open.spotify.com/track/75JFxkI2RXiU7L9VXzMkle" },
+                { title: "Seven Nation Army", artist: "The White Stripes", year: 2003, spotify: "https://open.spotify.com/track/7i2DJ88J7jQ6C7E1GM5GqS" },
+                { title: "Lose Yourself", artist: "Eminem", year: 2002, spotify: "https://open.spotify.com/track/7w9bgPAmPTtrkt2v16QWvQ" },
+                { title: "Beautiful Day", artist: "U2", year: 2000, spotify: "https://open.spotify.com/track/4e8sCYisnGKOYA87W2CYJS" },
+                { title: "Chasing Cars", artist: "Snow Patrol", year: 2006, spotify: "https://open.spotify.com/track/2BCjPYQ2gPLkfcBNj91w0g" },
+                { title: "Viva la Vida", artist: "Coldplay", year: 2008, spotify: "https://open.spotify.com/track/1mea3bSkSGXuIRvnydlB5b" },
+                { title: "Somebody Told Me", artist: "The Killers", year: 2004, spotify: "https://open.spotify.com/track/0V21z0p6Gp4aNZF6xUEdQg" },
+                { title: "Rehab", artist: "Amy Winehouse", year: 2006, spotify: "https://open.spotify.com/track/0VO8fOCfHM1M9AZrGjwXiV" },
+                { title: "SexyBack", artist: "Justin Timberlake", year: 2006, spotify: "https://open.spotify.com/track/62k1jtlrXqK7xpfxAkLRMp" },
+                { title: "Bleeding Love", artist: "Leona Lewis", year: 2007, spotify: "https://open.spotify.com/track/7d3m4Pp7HfVlmYvmWWHbHw" },
+                { title: "Apologize", artist: "OneRepublic", year: 2007, spotify: "https://open.spotify.com/track/1ZY3yD8FXUm0sAJqghDr7F" },
+                { title: "Hot N Cold", artist: "Katy Perry", year: 2008, spotify: "https://open.spotify.com/track/6F8s4XDTxPqfZ9G4HcPBzj" }
+            ],
+            "2010s": [
+                { title: "Shape of You", artist: "Ed Sheeran", year: 2017, spotify: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3" },
+                { title: "Uptown Funk", artist: "Bruno Mars", year: 2014, spotify: "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS" },
+                { title: "Despacito", artist: "Luis Fonsi", year: 2017, spotify: "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb" },
+                { title: "Rolling in the Deep", artist: "Adele", year: 2010, spotify: "https://open.spotify.com/track/1c8gk2PeTE04A1pIDH9YMk" },
+                { title: "Someone Like You", artist: "Adele", year: 2011, spotify: "https://open.spotify.com/track/1zwMYTA5nlNjZxYrvBB2pV" },
+                { title: "Hello", artist: "Adele", year: 2015, spotify: "https://open.spotify.com/track/4sPmO7WMQUAf45kwMOtONw" },
+                { title: "Blinding Lights", artist: "The Weeknd", year: 2019, spotify: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b" },
+                { title: "Bad Guy", artist: "Billie Eilish", year: 2019, spotify: "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m" },
+                { title: "Old Town Road", artist: "Lil Nas X", year: 2019, spotify: "https://open.spotify.com/track/2YpeDb67231RjR0MgVLzsG" },
+                { title: "Gangnam Style", artist: "PSY", year: 2012, spotify: "https://open.spotify.com/track/03UrZgTINDqvnUMbbIMhql" },
+                { title: "Call Me Maybe", artist: "Carly Rae Jepsen", year: 2012, spotify: "https://open.spotify.com/track/20I6sIOMTCkB6w7ryavxtO" },
+                { title: "Royals", artist: "Lorde", year: 2013, spotify: "https://open.spotify.com/track/2dLLR6qlu5UJ5gk0dKz0h3" },
+                { title: "Get Lucky", artist: "Daft Punk", year: 2013, spotify: "https://open.spotify.com/track/2Foc5Q5nqNiosCNqttzHof" },
+                { title: "Happy", artist: "Pharrell Williams", year: 2013, spotify: "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH" },
+                { title: "Thinking Out Loud", artist: "Ed Sheeran", year: 2014, spotify: "https://open.spotify.com/track/34gCuhDGsG4bRPIf9bb02f" },
+                { title: "Shake It Off", artist: "Taylor Swift", year: 2014, spotify: "https://open.spotify.com/track/0cqRj7pUJDkTCEsJkx8snD" },
+                { title: "Blank Space", artist: "Taylor Swift", year: 2014, spotify: "https://open.spotify.com/track/1p80LdxRV74UKvL8gnD7ky" },
+                { title: "Chandelier", artist: "Sia", year: 2014, spotify: "https://open.spotify.com/track/2Qghp2Tv7iIhR2dYBKk7iy" },
+                { title: "Can't Stop the Feeling", artist: "Justin Timberlake", year: 2016, spotify: "https://open.spotify.com/track/7ozsRLV3YqSGQLkJBrZfqz" },
+                { title: "Closer", artist: "The Chainsmokers", year: 2016, spotify: "https://open.spotify.com/track/7BKLCZ1jbUBVqRi2FVlTVw" },
+                { title: "Havana", artist: "Camila Cabello", year: 2017, spotify: "https://open.spotify.com/track/1rfofaqEpACxVEHIZBJe6W" },
+                { title: "God's Plan", artist: "Drake", year: 2018, spotify: "https://open.spotify.com/track/6DCZcSspjsKoFjzjrWoCdn" },
+                { title: "Thank U, Next", artist: "Ariana Grande", year: 2018, spotify: "https://open.spotify.com/track/2rPE9A1vEgShuZxxzR2tZH" },
+                { title: "Señorita", artist: "Shawn Mendes & Camila Cabello", year: 2019, spotify: "https://open.spotify.com/track/757aE44tKEUQEqRuT6GnEB" },
+                { title: "Sunflower", artist: "Post Malone", year: 2018, spotify: "https://open.spotify.com/track/0RiRZpuVRbi7oqRdSMwhQY" }
+            ],
+            rock_argentino: [
+                { title: "De Música Ligera", artist: "Soda Stereo", year: 1990, spotify: "https://open.spotify.com/track/5I0CDqJJvh5lM12YuJgqAF" },
+                { title: "Persiana Americana", artist: "Soda Stereo", year: 1986, spotify: "https://open.spotify.com/track/7dT3AGYV4KnSPaXWDfHoQ3" },
+                { title: "En la Ciudad de la Furia", artist: "Soda Stereo", year: 1988, spotify: "https://open.spotify.com/track/5Qbp5nnxU8V6QDd2NoaM7I" },
+                { title: "Cuando Pase el Temblor", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/4eFdN8BLK3qWt6VjKqVVKv" },
+                { title: "Nada Personal", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/1eNLyJwfRMmfKfGHNnNmiX" },
+                { title: "La Balsa", artist: "Los Gatos", year: 1967, spotify: "https://open.spotify.com/track/3rA8llK3IEIiMxQxJLJOzS" },
+                { title: "Seminare", artist: "Serú Girán", year: 1978, spotify: "https://open.spotify.com/track/2FvGPV1CKEkDHMgqWiP1Iu" },
+                { title: "Canción de Alicia en el País", artist: "Serú Girán", year: 1980, spotify: "https://open.spotify.com/track/3jCDqBJvRDzNMNqiMzXifl" },
+                { title: "Rasguña las Piedras", artist: "Sui Generis", year: 1973, spotify: "https://open.spotify.com/track/56QPuaTpN2sHkqNvmM2vjW" },
+                { title: "Canción para Mi Muerte", artist: "Sui Generis", year: 1972, spotify: "https://open.spotify.com/track/2qbJuhk6CJ7vvfkrMuzqtG" },
+                { title: "Muchacha Ojos de Papel", artist: "Almendra", year: 1969, spotify: "https://open.spotify.com/track/5dJ0F6ROvBHxUEJhcFfLj3" },
+                { title: "Solo le Pido a Dios", artist: "León Gieco", year: 1978, spotify: "https://open.spotify.com/track/4lzp0PWRP4Db47WBnYqGxL" },
+                { title: "La Memoria", artist: "León Gieco", year: 2001, spotify: "https://open.spotify.com/track/6gNi7m8JzQd5vL1gEL5gJQ" },
+                { title: "Inconsciente Colectivo", artist: "Charly García", year: 1982, spotify: "https://open.spotify.com/track/3LvzEaZjH2vLYm9DJh9cJW" },
+                { title: "Nos Siguen Pegando Abajo", artist: "Charly García", year: 1983, spotify: "https://open.spotify.com/track/6L3eLT7gtBiZEIiGRfqR0g" },
+                { title: "Demoliendo Hoteles", artist: "Charly García", year: 1984, spotify: "https://open.spotify.com/track/1JGYJ5M4WRVhJaQ2JVT7VZ" },
+                { title: "El Tesoro de los Inocentes", artist: "Patricio Rey", year: 1991, spotify: "https://open.spotify.com/track/0J9WqF0dJqKODMiPrJq6pN" },
+                { title: "Ji Ji Ji", artist: "Patricio Rey", year: 1986, spotify: "https://open.spotify.com/track/5PPBrVcTi3ZGVYfvCvhgBb" },
+                { title: "Juguetes Perdidos", artist: "Patricio Rey", year: 1996, spotify: "https://open.spotify.com/track/7sbQkgL2lCUr9BNlvv4pXC" },
+                { title: "Lamento Boliviano", artist: "Enanitos Verdes", year: 1994, spotify: "https://open.spotify.com/track/3zSTUijrNLK2W3J1HAJR2h" },
+                { title: "La Muralla Verde", artist: "Enanitos Verdes", year: 1985, spotify: "https://open.spotify.com/track/5EQzfCjC2gxC9L9C0SXn48" },
+                { title: "Tus Viejas Cartas", artist: "Enanitos Verdes", year: 1988, spotify: "https://open.spotify.com/track/0V3RgZ8QPGwPBBXS7x4v3i" },
+                { title: "Amanece", artist: "Virus", year: 1985, spotify: "https://open.spotify.com/track/3F5dL5hQTmYKROhFKtCDNk" },
+                { title: "Luna de Miel en la Mano", artist: "Virus", year: 1984, spotify: "https://open.spotify.com/track/1qMFPdNOPAiPxAMw0A4rFS" },
+                { title: "El Oso", artist: "Moris", year: 1970, spotify: "https://open.spotify.com/track/2c9hMNT8K4w7zzwBvCLCJP" }
+            ]
+        };
+
+        // Tipos de preguntas
+        const questionTypes = [
+            { text: "¿Año exacto?", key: "year" },
+            { text: "¿Década?", key: "decade" },
+            { text: "¿Artista o grupo?", key: "artist" },
+            { text: "¿Título de la canción?", key: "title" }
+        ];
+
+        let currentCategory = 'todas';
+        let currentSong = null;
+        let currentQuestion = null;
+        let timerInterval = null;
+        let timeLeft = 20;
+
+        function getDecade(year) {
+            return Math.floor(year / 10) * 10 + "s";
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function getSongsForCategory(category) {
+            if (category === 'todas') {
+                let allSongs = [];
+                Object.values(songs).forEach(categorySongs => {
+                    allSongs = allSongs.concat(categorySongs);
+                });
+                return shuffleArray(allSongs);
+            }
+            return shuffleArray(songs[category] || []);
+        }
+
+        function startGame(category) {
+            currentCategory = category;
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            document.getElementById('answer-screen').style.display = 'none';
+            nextSong();
+        }
+
+        function nextSong() {
+            // Limpiar timer anterior
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            const availableSongs = getSongsForCategory(currentCategory);
+            if (availableSongs.length === 0) {
+                alert('No hay canciones en esta categoría');
+                backToCategories();
+                return;
+            }
+
+            currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
+            currentQuestion = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+
+            // Actualizar UI
+            document.getElementById('question-type').textContent = currentQuestion.text;
+            document.getElementById('spotify-link').href = currentSong.spotify;
+            
+            // Mostrar pantalla de juego
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            document.getElementById('answer-screen').style.display = 'none';
+
+            // Iniciar cuenta atrás
+            timeLeft = 20;
+            updateTimer();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    revealAnswer();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const timerNumber = document.getElementById('timer-number');
+            const timerCircle = document.getElementById('timer-circle');
+            
+            timerNumber.textContent = timeLeft;
+            
+            // Cambiar color según tiempo restante
+            timerCircle.className = 'timer-circle';
+            if (timeLeft > 14) {
+                timerCircle.classList.add('timer-green');
+            } else if (timeLeft > 8) {
+                timerCircle.classList.add('timer-yellow');
+            } else if (timeLeft > 4) {
+                timerCircle.classList.add('timer-orange');
+            } else {
+                timerCircle.classList.add('timer-red');
+            }
+        }
+
+        function revealAnswer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            document.getElementById('answer-title').textContent = currentSong.title;
+            document.getElementById('answer-artist').textContent = currentSong.artist;
+            document.getElementById('answer-year').textContent = currentSong.year;
+            document.getElementById('answer-decade').textContent = getDecade(currentSong.year);
+
+            // Resaltar la respuesta que se pedía
+            document.querySelectorAll('.answer-value').forEach(el => el.classList.remove('highlight'));
+            
+            switch(currentQuestion.key) {
+                case 'year':
+                    document.getElementById('answer-year').classList.add('highlight');
+                    break;
+                case 'decade':
+                    document.getElementById('answer-decade').classList.add('highlight');
+                    break;
+                case 'artist':
+                    document.getElementById('answer-artist').classList.add('highlight');
+                    break;
+                case 'title':
+                    document.getElementById('answer-title').classList.add('highlight');
+                    break;
+            }
+
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('answer-screen').style.display = 'flex';
+        }
+
+        function backToCategories() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            document.getElementById('start-screen').style.display = 'block';
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('answer-screen').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
