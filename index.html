@@ -354,11 +354,14 @@
             </button>
         </div>
 
-        <!-- Pantalla 3: Cuenta atrás -->
-        <div id="screen-countdown" class="screen countdown-screen">
-            <div class="countdown-text">¡Prepárate para NO mirar!</div>
-            <div class="countdown-number" id="countdown-number">3</div>
-            <div class="countdown-text">Spotify se abrirá automáticamente</div>
+        <!-- Pantalla 3: Preparación -->
+        <div id="screen-ready" class="screen countdown-screen">
+            <div class="countdown-text">¿Listo para escuchar?</div>
+            <div class="countdown-number">🎵</div>
+            <div class="countdown-text">Pulsa continuar y gira el móvil</div>
+            <button class="btn btn-next" onclick="openSpotify()" style="margin-top: 40px; font-size: 1.3rem; padding: 20px 50px;">
+                ▶️ Continuar
+            </button>
         </div>
 
         <!-- Pantalla 4: Respuesta -->
@@ -693,34 +696,13 @@
             const availableSongs = getSongsForCategory(currentCategory);
             currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
             
-            // Iniciar cuenta atrás
-            startCountdown();
+            // Ir a pantalla de preparación
+            goToScreen('screen-ready');
         }
 
-        function startCountdown() {
-            goToScreen('screen-countdown');
-            let count = 3;
-            const countdownEl = document.getElementById('countdown-number');
-            countdownEl.textContent = count;
-            
-            const interval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownEl.textContent = count;
-                    countdownEl.style.animation = 'none';
-                    countdownEl.offsetHeight; // Trigger reflow
-                    countdownEl.style.animation = 'pulse 1s ease-in-out';
-                } else {
-                    clearInterval(interval);
-                    countdownEl.textContent = '🎵';
-                    
-                    // Abrir Spotify y mostrar pantalla de respuesta
-                    setTimeout(() => {
-                        window.open(currentSong.spotify, '_blank');
-                        showAnswer();
-                    }, 500);
-                }
-            }, 1000);
+        function openSpotify() {
+            window.open(currentSong.spotify, '_blank');
+            showAnswer();
         }
 
         function showAnswer() {
