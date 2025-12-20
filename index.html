@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v11</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v12</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -356,21 +356,6 @@
             <button class="btn btn-back" onclick="goToScreen('screen-categories')">
                 ← Cambiar categoría
             </button>
-        </div>
-
-        <!-- Pantalla 3: Preparación -->
-        <div id="screen-ready" class="screen countdown-screen">
-            <div class="countdown-text">¿Listo para escuchar?</div>
-            <div class="countdown-number">🎵</div>
-            <div class="countdown-text">Elige dónde reproducir y gira el móvil</div>
-            <div style="display: flex; gap: 15px; margin-top: 40px;">
-                <button class="btn" onclick="startCountdown('spotify')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%);">
-                    🎧 Spotify
-                </button>
-                <button class="btn" onclick="startCountdown('youtube')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%);">
-                    ▶️ YouTube
-                </button>
-            </div>
         </div>
 
         <!-- Pantalla 4: Cuenta atrás -->
@@ -725,8 +710,8 @@
             const availableSongs = getSongsForCategory(currentCategory);
             currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
             
-            // Ir a pantalla de preparación
-            goToScreen('screen-ready');
+            // Ir directamente a cuenta atrás
+            startCountdown();
         }
 
         // Filtrar preguntas según categoría
@@ -751,16 +736,13 @@
             }
         }
 
-        let selectedPlatform = null;
-
-        function startCountdown(platform) {
-            selectedPlatform = platform;
+        function startCountdown() {
             goToScreen('screen-countdown');
             
             // Reset
             document.getElementById('countdown-buttons').style.display = 'none';
-            document.getElementById('countdown-text').textContent = '¡Gira el móvil!';
-            document.getElementById('countdown-subtext').textContent = 'Abriendo en...';
+            document.getElementById('countdown-text').textContent = '¡Prepárate!';
+            document.getElementById('countdown-subtext').textContent = 'Gira el móvil en...';
             
             let count = 3;
             const countdownEl = document.getElementById('countdown-number');
@@ -774,7 +756,7 @@
                     clearInterval(interval);
                     countdownEl.textContent = '🎵';
                     document.getElementById('countdown-text').textContent = '¡YA!';
-                    document.getElementById('countdown-subtext').textContent = 'Pulsa para abrir (no mires)';
+                    document.getElementById('countdown-subtext').textContent = 'Pulsa y gira el móvil';
                     document.getElementById('countdown-buttons').style.display = 'block';
                 }
             }, 1000);
