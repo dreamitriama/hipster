@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v9</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v10</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -347,6 +347,10 @@
                     <span class="question-icon">🎵</span>
                     <span>Título canción</span>
                 </button>
+                <button class="question-btn" onclick="selectQuestion('movie')" id="btn-movie" style="display: none;">
+                    <span class="question-icon">🎬</span>
+                    <span>Película/Serie</span>
+                </button>
             </div>
 
             <button class="btn btn-back" onclick="goToScreen('screen-categories')">
@@ -371,9 +375,17 @@
 
         <!-- Pantalla 4: Cuenta atrás -->
         <div id="screen-countdown" class="screen countdown-screen">
-            <div class="countdown-text">¡Gira el móvil!</div>
+            <div class="countdown-text" id="countdown-text">¡Gira el móvil!</div>
             <div class="countdown-number" id="countdown-number">3</div>
-            <div class="countdown-text">Abriendo en...</div>
+            <div class="countdown-subtext" id="countdown-subtext">Abriendo en...</div>
+            <div id="countdown-buttons" style="display: none; margin-top: 30px;">
+                <button class="btn" onclick="openSpotify()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%); margin: 5px;">
+                    🎧 Abrir Spotify
+                </button>
+                <button class="btn" onclick="openYouTube()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%); margin: 5px;">
+                    ▶️ Abrir YouTube
+                </button>
+            </div>
         </div>
 
         <!-- Pantalla 5: Respuesta -->
@@ -531,20 +543,20 @@
                 { title: "Mujer Contra Mujer", artist: "Mecano", year: 1988, spotify: "https://open.spotify.com/track/1dNjhkPVCvp2zO0MJ0DHp8" }
             ],
             series: [
-                { title: "I'll Be There for You", artist: "The Rembrandts", year: 1995, spotify: "https://open.spotify.com/track/1qCQTy0fTXerET4x8VHyr9" },
-                { title: "Game of Thrones Theme", artist: "Ramin Djawadi", year: 2011, spotify: "https://open.spotify.com/track/0Gu8YGvvjF7BNV3HKU9RPI" },
-                { title: "Stranger Things Theme", artist: "Kyle Dixon", year: 2016, spotify: "https://open.spotify.com/track/0bPrEFE6Kwy9j7Ruhv5xYa" },
-                { title: "The Simpsons Theme", artist: "Danny Elfman", year: 1989, spotify: "https://open.spotify.com/track/4cYR3HaYRTqZjyZHJilZPY" },
-                { title: "Twin Peaks Theme", artist: "Angelo Badalamenti", year: 1990, spotify: "https://open.spotify.com/track/3wk60laSsVEMOv6QIHW4DE" },
-                { title: "Miami Vice Theme", artist: "Jan Hammer", year: 1985, spotify: "https://open.spotify.com/track/6XDwvn8kfVfEYmfj4cYO5A" },
-                { title: "The X-Files Theme", artist: "Mark Snow", year: 1993, spotify: "https://open.spotify.com/track/3txthC3HJe6Bai0L3zGZRF" },
-                { title: "The Mandalorian Theme", artist: "Ludwig Göransson", year: 2019, spotify: "https://open.spotify.com/track/0zRcvCVwLtBjLuWxepLwBh" },
-                { title: "Red Right Hand", artist: "Nick Cave", year: 2013, spotify: "https://open.spotify.com/track/1GhPHrq36VKCY3ucVaZCfo" },
-                { title: "Bella Ciao", artist: "La Casa de Papel", year: 2017, spotify: "https://open.spotify.com/track/2JL3Xt1bKPgVPU0oqcbOXA" },
-                { title: "Tuyo", artist: "Rodrigo Amarante", year: 2015, spotify: "https://open.spotify.com/track/0R9CM8IOuNBMOGnJRqLgSv" },
-                { title: "Pink Panther Theme", artist: "Henry Mancini", year: 1963, spotify: "https://open.spotify.com/track/1rq26GlqJiVsLEq8lXFLQs" },
-                { title: "Mission Impossible Theme", artist: "Lalo Schifrin", year: 1966, spotify: "https://open.spotify.com/track/3lE2p8SN9A0kzfUvTltYqo" },
-                { title: "Teardrop", artist: "Massive Attack", year: 2004, spotify: "https://open.spotify.com/track/67Hna13dNDkZvBpTXRIaOJ" }
+                { title: "I'll Be There for You", artist: "The Rembrandts", year: 1995, movie: "Friends", spotify: "https://open.spotify.com/track/1qCQTy0fTXerET4x8VHyr9", youtube: "https://www.youtube.com/watch?v=q-9kPks0IfE" },
+                { title: "Game of Thrones Theme", artist: "Ramin Djawadi", year: 2011, movie: "Juego de Tronos", spotify: "https://open.spotify.com/track/0Gu8YGvvjF7BNV3HKU9RPI", youtube: "https://www.youtube.com/watch?v=s7L2PVdrb_8" },
+                { title: "Stranger Things Theme", artist: "Kyle Dixon", year: 2016, movie: "Stranger Things", spotify: "https://open.spotify.com/track/0bPrEFE6Kwy9j7Ruhv5xYa", youtube: "https://www.youtube.com/watch?v=-RcPZdihrp4" },
+                { title: "The Simpsons Theme", artist: "Danny Elfman", year: 1989, movie: "Los Simpson", spotify: "https://open.spotify.com/track/4cYR3HaYRTqZjyZHJilZPY", youtube: "https://www.youtube.com/watch?v=Xqog63KOANc" },
+                { title: "Twin Peaks Theme", artist: "Angelo Badalamenti", year: 1990, movie: "Twin Peaks", spotify: "https://open.spotify.com/track/3wk60laSsVEMOv6QIHW4DE", youtube: "https://www.youtube.com/watch?v=i7d0Lm_31BE" },
+                { title: "Miami Vice Theme", artist: "Jan Hammer", year: 1985, movie: "Miami Vice", spotify: "https://open.spotify.com/track/6XDwvn8kfVfEYmfj4cYO5A", youtube: "https://www.youtube.com/watch?v=dEjXPY9jOx8" },
+                { title: "The X-Files Theme", artist: "Mark Snow", year: 1993, movie: "Expediente X", spotify: "https://open.spotify.com/track/3txthC3HJe6Bai0L3zGZRF", youtube: "https://www.youtube.com/watch?v=hAAlDoAtV7Y" },
+                { title: "The Mandalorian Theme", artist: "Ludwig Göransson", year: 2019, movie: "The Mandalorian", spotify: "https://open.spotify.com/track/0zRcvCVwLtBjLuWxepLwBh", youtube: "https://www.youtube.com/watch?v=aLYKayLU9gU" },
+                { title: "Red Right Hand", artist: "Nick Cave", year: 2013, movie: "Peaky Blinders", spotify: "https://open.spotify.com/track/1GhPHrq36VKCY3ucVaZCfo", youtube: "https://www.youtube.com/watch?v=RrxePKps87k" },
+                { title: "Bella Ciao", artist: "La Casa de Papel", year: 2017, movie: "La Casa de Papel", spotify: "https://open.spotify.com/track/2JL3Xt1bKPgVPU0oqcbOXA", youtube: "https://www.youtube.com/watch?v=4CI3lhyNKfo" },
+                { title: "Tuyo", artist: "Rodrigo Amarante", year: 2015, movie: "Narcos", spotify: "https://open.spotify.com/track/0R9CM8IOuNBMOGnJRqLgSv", youtube: "https://www.youtube.com/watch?v=PtJ6yAGjsIs" },
+                { title: "Pink Panther Theme", artist: "Henry Mancini", year: 1963, movie: "La Pantera Rosa", spotify: "https://open.spotify.com/track/1rq26GlqJiVsLEq8lXFLQs", youtube: "https://www.youtube.com/watch?v=9OPc7MRm4Y8" },
+                { title: "Mission Impossible Theme", artist: "Lalo Schifrin", year: 1966, movie: "Misión Imposible", spotify: "https://open.spotify.com/track/3lE2p8SN9A0kzfUvTltYqo", youtube: "https://www.youtube.com/watch?v=XAYhNHhxN0A" },
+                { title: "Teardrop", artist: "Massive Attack", year: 2004, movie: "House", spotify: "https://open.spotify.com/track/67Hna13dNDkZvBpTXRIaOJ", youtube: "https://www.youtube.com/watch?v=u7K72X4eo_s" }
             ],
             "80s": [
                 { title: "Take On Me", artist: "a-ha", year: 1985, spotify: "https://open.spotify.com/track/2WfaOiMkCvy7F5fcp2zZ8L", youtube: "https://www.youtube.com/watch?v=djV11Xbc914" },
@@ -720,12 +732,22 @@
         // Filtrar preguntas según categoría
         function setupQuestionScreen() {
             const decadeCategories = ['80s', '90s', '2000s', '2010s'];
+            const movieCategories = ['bso', 'series'];
             const decadeBtn = document.getElementById('btn-decade');
+            const movieBtn = document.getElementById('btn-movie');
             
+            // Ocultar década para categorías de décadas
             if (decadeCategories.includes(currentCategory)) {
                 decadeBtn.style.display = 'none';
             } else {
                 decadeBtn.style.display = 'flex';
+            }
+            
+            // Mostrar película para BSO y Series
+            if (movieCategories.includes(currentCategory)) {
+                movieBtn.style.display = 'flex';
+            } else {
+                movieBtn.style.display = 'none';
             }
         }
 
@@ -734,6 +756,12 @@
         function startCountdown(platform) {
             selectedPlatform = platform;
             goToScreen('screen-countdown');
+            
+            // Reset
+            document.getElementById('countdown-buttons').style.display = 'none';
+            document.getElementById('countdown-text').textContent = '¡Gira el móvil!';
+            document.getElementById('countdown-subtext').textContent = 'Abriendo en...';
+            
             let count = 3;
             const countdownEl = document.getElementById('countdown-number');
             countdownEl.textContent = count;
@@ -745,14 +773,9 @@
                 } else {
                     clearInterval(interval);
                     countdownEl.textContent = '🎵';
-                    
-                    setTimeout(() => {
-                        if (selectedPlatform === 'spotify') {
-                            openSpotify();
-                        } else {
-                            openYouTube();
-                        }
-                    }, 500);
+                    document.getElementById('countdown-text').textContent = '¡YA!';
+                    document.getElementById('countdown-subtext').textContent = 'Pulsa para abrir (no mires)';
+                    document.getElementById('countdown-buttons').style.display = 'block';
                 }
             }, 1000);
         }
@@ -801,6 +824,10 @@
                 case 'title':
                     labelEl.textContent = 'Título de la canción';
                     valueEl.textContent = currentSong.title;
+                    break;
+                case 'movie':
+                    labelEl.textContent = 'Película/Serie';
+                    valueEl.textContent = currentSong.movie || 'Desconocida';
                     break;
             }
             
