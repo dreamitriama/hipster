@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v10</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v11</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -784,19 +784,19 @@
             // Extraer el ID de la canción del link
             const trackId = currentSong.spotify.split('/track/')[1];
             // Usar URI de Spotify para abrir la app directamente
-            window.open('spotify:track:' + trackId, '_blank');
-            showAnswer();
+            window.location.href = 'spotify:track:' + trackId;
+            setTimeout(showAnswer, 500);
         }
 
         function openYouTube() {
             // Usar link directo de YouTube
             if (currentSong.youtube) {
-                window.open(currentSong.youtube, '_blank');
+                window.location.href = currentSong.youtube;
             } else {
                 const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist + ' official');
-                window.open('https://www.youtube.com/results?search_query=' + searchQuery, '_blank');
+                window.location.href = 'https://www.youtube.com/results?search_query=' + searchQuery;
             }
-            showAnswer();
+            setTimeout(showAnswer, 500);
         }
 
         function showAnswer() {
