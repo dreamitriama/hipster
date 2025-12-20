@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito</p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v7</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -358,10 +358,15 @@
         <div id="screen-ready" class="screen countdown-screen">
             <div class="countdown-text">¿Listo para escuchar?</div>
             <div class="countdown-number">🎵</div>
-            <div class="countdown-text">Pulsa continuar y gira el móvil</div>
-            <button class="btn btn-next" onclick="openSpotify()" style="margin-top: 40px; font-size: 1.3rem; padding: 20px 50px;">
-                ▶️ Continuar
-            </button>
+            <div class="countdown-text">Elige dónde reproducir y gira el móvil</div>
+            <div style="display: flex; gap: 15px; margin-top: 40px;">
+                <button class="btn" onclick="openSpotify()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%);">
+                    🎧 Spotify
+                </button>
+                <button class="btn" onclick="openYouTube()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%);">
+                    ▶️ YouTube
+                </button>
+            </div>
         </div>
 
         <!-- Pantalla 4: Respuesta -->
@@ -705,6 +710,13 @@
             const trackId = currentSong.spotify.split('/track/')[1];
             // Usar URI de Spotify para abrir la app directamente
             window.location.href = 'spotify:track:' + trackId;
+            showAnswer();
+        }
+
+        function openYouTube() {
+            // Buscar la canción en YouTube
+            const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist);
+            window.location.href = 'https://www.youtube.com/results?search_query=' + searchQuery;
             showAnswer();
         }
 
