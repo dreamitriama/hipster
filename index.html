@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v7</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v9</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -331,7 +331,7 @@
                     <span class="question-icon">📅</span>
                     <span>Año exacto</span>
                 </button>
-                <button class="question-btn" onclick="selectQuestion('decade')">
+                <button class="question-btn" onclick="selectQuestion('decade')" id="btn-decade">
                     <span class="question-icon">📆</span>
                     <span>Década</span>
                 </button>
@@ -360,16 +360,23 @@
             <div class="countdown-number">🎵</div>
             <div class="countdown-text">Elige dónde reproducir y gira el móvil</div>
             <div style="display: flex; gap: 15px; margin-top: 40px;">
-                <button class="btn" onclick="openSpotify()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%);">
+                <button class="btn" onclick="startCountdown('spotify')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%);">
                     🎧 Spotify
                 </button>
-                <button class="btn" onclick="openYouTube()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%);">
+                <button class="btn" onclick="startCountdown('youtube')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%);">
                     ▶️ YouTube
                 </button>
             </div>
         </div>
 
-        <!-- Pantalla 4: Respuesta -->
+        <!-- Pantalla 4: Cuenta atrás -->
+        <div id="screen-countdown" class="screen countdown-screen">
+            <div class="countdown-text">¡Gira el móvil!</div>
+            <div class="countdown-number" id="countdown-number">3</div>
+            <div class="countdown-text">Abriendo en...</div>
+        </div>
+
+        <!-- Pantalla 5: Respuesta -->
         <div id="screen-answer" class="screen answer-screen">
             <h2>🎉 ¡Respuesta!</h2>
             
@@ -385,6 +392,10 @@
                     <div class="full-info-item">
                         <div class="full-info-label">Artista</div>
                         <div class="full-info-value" id="full-artist">-</div>
+                    </div>
+                    <div class="full-info-item" id="full-movie-container" style="display: none;">
+                        <div class="full-info-label">Película/Serie</div>
+                        <div class="full-info-value" id="full-movie">-</div>
                     </div>
                     <div class="full-info-item">
                         <div class="full-info-label">Año</div>
@@ -415,90 +426,90 @@
         // Base de datos de canciones
         const songs = {
             hits: [
-                { title: "Billie Jean", artist: "Michael Jackson", year: 1983, spotify: "https://open.spotify.com/track/5ChkMS8OtdzJeqyybCc9R5" },
-                { title: "Bohemian Rhapsody", artist: "Queen", year: 1975, spotify: "https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J" },
-                { title: "Shape of You", artist: "Ed Sheeran", year: 2017, spotify: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3" },
-                { title: "Blinding Lights", artist: "The Weeknd", year: 2019, spotify: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b" },
-                { title: "Rolling in the Deep", artist: "Adele", year: 2010, spotify: "https://open.spotify.com/track/1c8gk2PeTE04A1pIDH9YMk" },
-                { title: "Uptown Funk", artist: "Bruno Mars", year: 2014, spotify: "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS" },
-                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51" },
-                { title: "Hotel California", artist: "Eagles", year: 1977, spotify: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" },
-                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T" },
-                { title: "Thriller", artist: "Michael Jackson", year: 1982, spotify: "https://open.spotify.com/track/2LlQb7Uoj1kKyGhlkBf9aC" },
-                { title: "Don't Stop Believin'", artist: "Journey", year: 1981, spotify: "https://open.spotify.com/track/4bHsxqR3GMrXTxEPLuK5ue" },
-                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF" },
-                { title: "Take On Me", artist: "a-ha", year: 1985, spotify: "https://open.spotify.com/track/2WfaOiMkCvy7F5fcp2zZ8L" },
-                { title: "Every Breath You Take", artist: "The Police", year: 1983, spotify: "https://open.spotify.com/track/1JSTJqkT5qHq8MDJnJbRE1" },
-                { title: "Despacito", artist: "Luis Fonsi", year: 2017, spotify: "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb" },
-                { title: "Bad Guy", artist: "Billie Eilish", year: 2019, spotify: "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m" },
-                { title: "Wonderwall", artist: "Oasis", year: 1995, spotify: "https://open.spotify.com/track/1qPbGZqppFwLwcBC1JQ6Vr" },
-                { title: "Mr. Brightside", artist: "The Killers", year: 2003, spotify: "https://open.spotify.com/track/003vvx7Niy0yvhvHt4a68B" },
-                { title: "Hey Jude", artist: "The Beatles", year: 1968, spotify: "https://open.spotify.com/track/0aym2LBJBk9DAYuHHutrIl" },
-                { title: "Imagine", artist: "John Lennon", year: 1971, spotify: "https://open.spotify.com/track/7pKfPomDEeI4TPT6EOYjn9" },
-                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH" },
-                { title: "I Will Always Love You", artist: "Whitney Houston", year: 1992, spotify: "https://open.spotify.com/track/4eHbdreAnSOrDDsFfc4Fpm" },
-                { title: "Like a Prayer", artist: "Madonna", year: 1989, spotify: "https://open.spotify.com/track/1z3ugFmUKoCzGsI6jdY4Ci" },
-                { title: "Waka Waka", artist: "Shakira", year: 2010, spotify: "https://open.spotify.com/track/2Cd9iWfcOpGDHLz6tVA3G0" },
-                { title: "Hips Don't Lie", artist: "Shakira", year: 2006, spotify: "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V" }
+                { title: "Billie Jean", artist: "Michael Jackson", year: 1983, spotify: "https://open.spotify.com/track/5ChkMS8OtdzJeqyybCc9R5", youtube: "https://www.youtube.com/watch?v=Zi_XLOBDo_Y" },
+                { title: "Bohemian Rhapsody", artist: "Queen", year: 1975, spotify: "https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J", youtube: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ" },
+                { title: "Shape of You", artist: "Ed Sheeran", year: 2017, spotify: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3", youtube: "https://www.youtube.com/watch?v=JGwWNGJdvx8" },
+                { title: "Blinding Lights", artist: "The Weeknd", year: 2019, spotify: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b", youtube: "https://www.youtube.com/watch?v=4NRXx6U8ABQ" },
+                { title: "Rolling in the Deep", artist: "Adele", year: 2010, spotify: "https://open.spotify.com/track/1c8gk2PeTE04A1pIDH9YMk", youtube: "https://www.youtube.com/watch?v=rYEDA3JcQqw" },
+                { title: "Uptown Funk", artist: "Bruno Mars", year: 2014, spotify: "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS", youtube: "https://www.youtube.com/watch?v=OPf0YbXqDm0" },
+                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51", youtube: "https://www.youtube.com/watch?v=1w7OgIMMRc4" },
+                { title: "Hotel California", artist: "Eagles", year: 1977, spotify: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv", youtube: "https://www.youtube.com/watch?v=EqPtz5qN7HM" },
+                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T", youtube: "https://www.youtube.com/watch?v=hTWKbfoikeg" },
+                { title: "Thriller", artist: "Michael Jackson", year: 1982, spotify: "https://open.spotify.com/track/2LlQb7Uoj1kKyGhlkBf9aC", youtube: "https://www.youtube.com/watch?v=sOnqjkJTMaA" },
+                { title: "Don't Stop Believin'", artist: "Journey", year: 1981, spotify: "https://open.spotify.com/track/4bHsxqR3GMrXTxEPLuK5ue", youtube: "https://www.youtube.com/watch?v=1k8craCGpgs" },
+                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF", youtube: "https://www.youtube.com/watch?v=lDK9QqIzhwk" },
+                { title: "Take On Me", artist: "a-ha", year: 1985, spotify: "https://open.spotify.com/track/2WfaOiMkCvy7F5fcp2zZ8L", youtube: "https://www.youtube.com/watch?v=djV11Xbc914" },
+                { title: "Every Breath You Take", artist: "The Police", year: 1983, spotify: "https://open.spotify.com/track/1JSTJqkT5qHq8MDJnJbRE1", youtube: "https://www.youtube.com/watch?v=OMOGaugKpzs" },
+                { title: "Despacito", artist: "Luis Fonsi", year: 2017, spotify: "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb", youtube: "https://www.youtube.com/watch?v=kJQP7kiw5Fk" },
+                { title: "Bad Guy", artist: "Billie Eilish", year: 2019, spotify: "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m", youtube: "https://www.youtube.com/watch?v=DyDfgMOUjCI" },
+                { title: "Wonderwall", artist: "Oasis", year: 1995, spotify: "https://open.spotify.com/track/1qPbGZqppFwLwcBC1JQ6Vr", youtube: "https://www.youtube.com/watch?v=bx1Bh8ZvH84" },
+                { title: "Mr. Brightside", artist: "The Killers", year: 2003, spotify: "https://open.spotify.com/track/003vvx7Niy0yvhvHt4a68B", youtube: "https://www.youtube.com/watch?v=gGdGFtwCNBE" },
+                { title: "Hey Jude", artist: "The Beatles", year: 1968, spotify: "https://open.spotify.com/track/0aym2LBJBk9DAYuHHutrIl", youtube: "https://www.youtube.com/watch?v=A_MjCqQoLLA" },
+                { title: "Imagine", artist: "John Lennon", year: 1971, spotify: "https://open.spotify.com/track/7pKfPomDEeI4TPT6EOYjn9", youtube: "https://www.youtube.com/watch?v=YkgkThdzX-8" },
+                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH", youtube: "https://www.youtube.com/watch?v=fNFzfwLM72c" },
+                { title: "I Will Always Love You", artist: "Whitney Houston", year: 1992, spotify: "https://open.spotify.com/track/4eHbdreAnSOrDDsFfc4Fpm", youtube: "https://www.youtube.com/watch?v=3JWTaaS7LdU" },
+                { title: "Like a Prayer", artist: "Madonna", year: 1989, spotify: "https://open.spotify.com/track/1z3ugFmUKoCzGsI6jdY4Ci", youtube: "https://www.youtube.com/watch?v=79fzeNUqQbQ" },
+                { title: "Waka Waka", artist: "Shakira", year: 2010, spotify: "https://open.spotify.com/track/2Cd9iWfcOpGDHLz6tVA3G0", youtube: "https://www.youtube.com/watch?v=pRpeEdMmmQ0" },
+                { title: "Hips Don't Lie", artist: "Shakira", year: 2006, spotify: "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V", youtube: "https://www.youtube.com/watch?v=DUT5rEU6pqM" }
             ],
             bso: [
-                { title: "My Heart Will Go On", artist: "Celine Dion", year: 1997, spotify: "https://open.spotify.com/track/33LC84JgLvK2KuW43MfaNq" },
-                { title: "Eye of the Tiger", artist: "Survivor", year: 1982, spotify: "https://open.spotify.com/track/2KH16WveTQWT6KOG9Rg6e2" },
-                { title: "I Will Always Love You", artist: "Whitney Houston", year: 1992, spotify: "https://open.spotify.com/track/4eHbdreAnSOrDDsFfc4Fpm" },
-                { title: "Hakuna Matata", artist: "El Rey León", year: 1994, spotify: "https://open.spotify.com/track/4pJLkSLQljKoJJZhmwnl3D" },
-                { title: "Let It Go", artist: "Idina Menzel", year: 2013, spotify: "https://open.spotify.com/track/0qcr5FMsEO85NAQjrlDRKo" },
-                { title: "Lose Yourself", artist: "Eminem", year: 2002, spotify: "https://open.spotify.com/track/5Z01UMMf7V1o0MzF86s6WJ" },
-                { title: "Footloose", artist: "Kenny Loggins", year: 1984, spotify: "https://open.spotify.com/track/3V8gOHxxPRsW6sHcWW2uhP" },
-                { title: "Ghostbusters", artist: "Ray Parker Jr.", year: 1984, spotify: "https://open.spotify.com/track/3m0y8qLoznUYi73SUBP8GI" },
-                { title: "Take My Breath Away", artist: "Berlin", year: 1986, spotify: "https://open.spotify.com/track/4VMYDCV2IfdHAt3X7KHz63" },
-                { title: "What a Feeling", artist: "Irene Cara", year: 1983, spotify: "https://open.spotify.com/track/4xh7W7tlNMIczFhupCPniY" },
-                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH" },
-                { title: "Circle of Life", artist: "El Rey León", year: 1994, spotify: "https://open.spotify.com/track/2DSKI14HWMqyWXZRaASlqh" },
-                { title: "Summer Nights", artist: "Grease", year: 1978, spotify: "https://open.spotify.com/track/3KKGt8D36PWcj08ohPeSnU" },
-                { title: "Time of My Life", artist: "Dirty Dancing", year: 1987, spotify: "https://open.spotify.com/track/2PwdKez7SfCfBYNziJNPGL" },
-                { title: "Skyfall", artist: "Adele", year: 2012, spotify: "https://open.spotify.com/track/6VObnIkLVruX4UVyxWhlqm" },
-                { title: "Happy", artist: "Pharrell Williams", year: 2013, spotify: "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH" },
-                { title: "You're The One That I Want", artist: "Grease", year: 1978, spotify: "https://open.spotify.com/track/2I9P2XSDFBL7kldaPZmVsG" },
-                { title: "Don't You Forget About Me", artist: "Simple Minds", year: 1985, spotify: "https://open.spotify.com/track/0WqIKmW4BTrj3eJFmnCKMv" }
+                { title: "My Heart Will Go On", artist: "Celine Dion", year: 1997, movie: "Titanic", spotify: "https://open.spotify.com/track/33LC84JgLvK2KuW43MfaNq", youtube: "https://www.youtube.com/watch?v=3gK_2XdjOdY" },
+                { title: "Eye of the Tiger", artist: "Survivor", year: 1982, movie: "Rocky III", spotify: "https://open.spotify.com/track/2KH16WveTQWT6KOG9Rg6e2", youtube: "https://www.youtube.com/watch?v=btPJPFnesV4" },
+                { title: "I Will Always Love You", artist: "Whitney Houston", year: 1992, movie: "El Guardaespaldas", spotify: "https://open.spotify.com/track/4eHbdreAnSOrDDsFfc4Fpm", youtube: "https://www.youtube.com/watch?v=3JWTaaS7LdU" },
+                { title: "Hakuna Matata", artist: "El Rey León", year: 1994, movie: "El Rey León", spotify: "https://open.spotify.com/track/4pJLkSLQljKoJJZhmwnl3D", youtube: "https://www.youtube.com/watch?v=nbY_aP-alkw" },
+                { title: "Let It Go", artist: "Idina Menzel", year: 2013, movie: "Frozen", spotify: "https://open.spotify.com/track/0qcr5FMsEO85NAQjrlDRKo", youtube: "https://www.youtube.com/watch?v=YVVTZgwYwVo" },
+                { title: "Lose Yourself", artist: "Eminem", year: 2002, movie: "8 Mile", spotify: "https://open.spotify.com/track/5Z01UMMf7V1o0MzF86s6WJ", youtube: "https://www.youtube.com/watch?v=_Yhyp-_hX2s" },
+                { title: "Footloose", artist: "Kenny Loggins", year: 1984, movie: "Footloose", spotify: "https://open.spotify.com/track/3V8gOHxxPRsW6sHcWW2uhP", youtube: "https://www.youtube.com/watch?v=ltrMfT4Qz5Y" },
+                { title: "Ghostbusters", artist: "Ray Parker Jr.", year: 1984, movie: "Cazafantasmas", spotify: "https://open.spotify.com/track/3m0y8qLoznUYi73SUBP8GI", youtube: "https://www.youtube.com/watch?v=Fe93CLbHjxQ" },
+                { title: "Take My Breath Away", artist: "Berlin", year: 1986, movie: "Top Gun", spotify: "https://open.spotify.com/track/4VMYDCV2IfdHAt3X7KHz63", youtube: "https://www.youtube.com/watch?v=Bx51eegLTY8" },
+                { title: "What a Feeling", artist: "Irene Cara", year: 1983, movie: "Flashdance", spotify: "https://open.spotify.com/track/4xh7W7tlNMIczFhupCPniY", youtube: "https://www.youtube.com/watch?v=ILWSp0m9G2c" },
+                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, movie: "Fiebre del Sábado Noche", spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH", youtube: "https://www.youtube.com/watch?v=fNFzfwLM72c" },
+                { title: "Circle of Life", artist: "El Rey León", year: 1994, movie: "El Rey León", spotify: "https://open.spotify.com/track/2DSKI14HWMqyWXZRaASlqh", youtube: "https://www.youtube.com/watch?v=GibiNy4d4gc" },
+                { title: "Summer Nights", artist: "Grease", year: 1978, movie: "Grease", spotify: "https://open.spotify.com/track/3KKGt8D36PWcj08ohPeSnU", youtube: "https://www.youtube.com/watch?v=ZW0DfsCzfq4" },
+                { title: "Time of My Life", artist: "Dirty Dancing", year: 1987, movie: "Dirty Dancing", spotify: "https://open.spotify.com/track/2PwdKez7SfCfBYNziJNPGL", youtube: "https://www.youtube.com/watch?v=4BQLE_RrTSU" },
+                { title: "Skyfall", artist: "Adele", year: 2012, movie: "Skyfall (James Bond)", spotify: "https://open.spotify.com/track/6VObnIkLVruX4UVyxWhlqm", youtube: "https://www.youtube.com/watch?v=DeumyOzKqgI" },
+                { title: "Happy", artist: "Pharrell Williams", year: 2013, movie: "Gru 2: Mi Villano Favorito", spotify: "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH", youtube: "https://www.youtube.com/watch?v=ZbZSe6N_BXs" },
+                { title: "You're The One That I Want", artist: "Grease", year: 1978, movie: "Grease", spotify: "https://open.spotify.com/track/2I9P2XSDFBL7kldaPZmVsG", youtube: "https://www.youtube.com/watch?v=7oKPYe53h78" },
+                { title: "Don't You Forget About Me", artist: "Simple Minds", year: 1985, movie: "El Club de los Cinco", spotify: "https://open.spotify.com/track/0WqIKmW4BTrj3eJFmnCKMv", youtube: "https://www.youtube.com/watch?v=CdqoNKCCt7A" }
             ],
             disco: [
-                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH" },
-                { title: "I Will Survive", artist: "Gloria Gaynor", year: 1978, spotify: "https://open.spotify.com/track/7rSMEcqv3Nz2UWZvzKZXAk" },
-                { title: "September", artist: "Earth, Wind & Fire", year: 1978, spotify: "https://open.spotify.com/track/2grjqo0Frpf2okIBiifQKs" },
-                { title: "Y.M.C.A.", artist: "Village People", year: 1978, spotify: "https://open.spotify.com/track/0JPnQk5XSruqsHYKuhvI9O" },
-                { title: "Funkytown", artist: "Lipps Inc", year: 1980, spotify: "https://open.spotify.com/track/0hKRSZhUGEhKU6aNSPBACZ" },
-                { title: "Hot Stuff", artist: "Donna Summer", year: 1979, spotify: "https://open.spotify.com/track/3Vn9oCZbdcmY4Fkoczdmug" },
-                { title: "Le Freak", artist: "Chic", year: 1978, spotify: "https://open.spotify.com/track/74tLlkN3rgVzRqQJgPfink" },
-                { title: "Dancing Queen", artist: "ABBA", year: 1976, spotify: "https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr" },
-                { title: "Rasputin", artist: "Boney M", year: 1978, spotify: "https://open.spotify.com/track/4NtUY5IGzHCaqfZemmAu56" },
-                { title: "Night Fever", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/4V4if8VmWKb1uC8AYxlGfB" },
-                { title: "Boogie Wonderland", artist: "Earth, Wind & Fire", year: 1979, spotify: "https://open.spotify.com/track/1jo3TwNGCXfNdB5uba3ZVv" },
-                { title: "We Are Family", artist: "Sister Sledge", year: 1979, spotify: "https://open.spotify.com/track/5uKfnkNO0B3HBLrPFVEVfH" },
-                { title: "Daddy Cool", artist: "Boney M", year: 1976, spotify: "https://open.spotify.com/track/5cMU0GIosTxR0uODjOBn2V" },
-                { title: "Gimme! Gimme! Gimme!", artist: "ABBA", year: 1979, spotify: "https://open.spotify.com/track/2fmGLslTWVwPprwBdPqFcm" },
-                { title: "Disco Inferno", artist: "The Trammps", year: 1976, spotify: "https://open.spotify.com/track/7F3HLLbXwPKevtRHua9Kzk" },
-                { title: "Last Dance", artist: "Donna Summer", year: 1978, spotify: "https://open.spotify.com/track/0Fi7vJCMKfSqUsKpjoJSsY" },
-                { title: "Rivers of Babylon", artist: "Boney M", year: 1978, spotify: "https://open.spotify.com/track/2iEiVel0RbRrKpRdR8GBOA" }
+                { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH", youtube: "https://www.youtube.com/watch?v=fNFzfwLM72c" },
+                { title: "I Will Survive", artist: "Gloria Gaynor", year: 1978, spotify: "https://open.spotify.com/track/7rSMEcqv3Nz2UWZvzKZXAk", youtube: "https://www.youtube.com/watch?v=ARt9HV9T0w8" },
+                { title: "September", artist: "Earth, Wind & Fire", year: 1978, spotify: "https://open.spotify.com/track/2grjqo0Frpf2okIBiifQKs", youtube: "https://www.youtube.com/watch?v=Gs069dndIYk" },
+                { title: "Y.M.C.A.", artist: "Village People", year: 1978, spotify: "https://open.spotify.com/track/0JPnQk5XSruqsHYKuhvI9O", youtube: "https://www.youtube.com/watch?v=CS9OO0S5w2k" },
+                { title: "Funkytown", artist: "Lipps Inc", year: 1980, spotify: "https://open.spotify.com/track/0hKRSZhUGEhKU6aNSPBACZ", youtube: "https://www.youtube.com/watch?v=s36eQwgPNSE" },
+                { title: "Hot Stuff", artist: "Donna Summer", year: 1979, spotify: "https://open.spotify.com/track/3Vn9oCZbdcmY4Fkoczdmug", youtube: "https://www.youtube.com/watch?v=AqS4aNi0HQY" },
+                { title: "Le Freak", artist: "Chic", year: 1978, spotify: "https://open.spotify.com/track/74tLlkN3rgVzRqQJgPfink", youtube: "https://www.youtube.com/watch?v=aXgSHL7efKg" },
+                { title: "Dancing Queen", artist: "ABBA", year: 1976, spotify: "https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr", youtube: "https://www.youtube.com/watch?v=xFrGuyw1V8s" },
+                { title: "Rasputin", artist: "Boney M", year: 1978, spotify: "https://open.spotify.com/track/4NtUY5IGzHCaqfZemmAu56", youtube: "https://www.youtube.com/watch?v=16y1AkoZkmQ" },
+                { title: "Night Fever", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/4V4if8VmWKb1uC8AYxlGfB", youtube: "https://www.youtube.com/watch?v=SkypZuY6ZvM" },
+                { title: "Boogie Wonderland", artist: "Earth, Wind & Fire", year: 1979, spotify: "https://open.spotify.com/track/1jo3TwNGCXfNdB5uba3ZVv", youtube: "https://www.youtube.com/watch?v=god7hAPv8f0" },
+                { title: "We Are Family", artist: "Sister Sledge", year: 1979, spotify: "https://open.spotify.com/track/5uKfnkNO0B3HBLrPFVEVfH", youtube: "https://www.youtube.com/watch?v=eBpYgpF1bqQ" },
+                { title: "Daddy Cool", artist: "Boney M", year: 1976, spotify: "https://open.spotify.com/track/5cMU0GIosTxR0uODjOBn2V", youtube: "https://www.youtube.com/watch?v=QtxlCsVKkvY" },
+                { title: "Gimme! Gimme! Gimme!", artist: "ABBA", year: 1979, spotify: "https://open.spotify.com/track/2fmGLslTWVwPprwBdPqFcm", youtube: "https://www.youtube.com/watch?v=XEjLoHdbVeE" },
+                { title: "Disco Inferno", artist: "The Trammps", year: 1976, spotify: "https://open.spotify.com/track/7F3HLLbXwPKevtRHua9Kzk", youtube: "https://www.youtube.com/watch?v=A_sY2rjxq6M" },
+                { title: "Last Dance", artist: "Donna Summer", year: 1978, spotify: "https://open.spotify.com/track/0Fi7vJCMKfSqUsKpjoJSsY", youtube: "https://www.youtube.com/watch?v=5vlp8oHiXRU" },
+                { title: "Rivers of Babylon", artist: "Boney M", year: 1978, spotify: "https://open.spotify.com/track/2iEiVel0RbRrKpRdR8GBOA", youtube: "https://www.youtube.com/watch?v=ta42xU2OKE0" }
             ],
             rock: [
-                { title: "Bohemian Rhapsody", artist: "Queen", year: 1975, spotify: "https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J" },
-                { title: "Hotel California", artist: "Eagles", year: 1977, spotify: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv" },
-                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51" },
-                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T" },
-                { title: "Back in Black", artist: "AC/DC", year: 1980, spotify: "https://open.spotify.com/track/08mG3Y1vljYA6bvDt4Wqkj" },
-                { title: "Highway to Hell", artist: "AC/DC", year: 1979, spotify: "https://open.spotify.com/track/2zYzyRzz6pRmhPzyfMEC8s" },
-                { title: "Enter Sandman", artist: "Metallica", year: 1991, spotify: "https://open.spotify.com/track/3VqHuw0wFlIHcIPWkhIbdQ" },
-                { title: "Nothing Else Matters", artist: "Metallica", year: 1991, spotify: "https://open.spotify.com/track/0nLiqZ6A27jJri2VCalIUs" },
-                { title: "Paradise City", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7d3m4Pp7HfVlmZvmWWHbHw" },
-                { title: "We Will Rock You", artist: "Queen", year: 1977, spotify: "https://open.spotify.com/track/54flyrjcdnQdco2300avMJ" },
-                { title: "We Are the Champions", artist: "Queen", year: 1977, spotify: "https://open.spotify.com/track/7ccI9cStQbQdystvc6TvxD" },
-                { title: "The Final Countdown", artist: "Europe", year: 1986, spotify: "https://open.spotify.com/track/2d4e45fmUnguxh6yqC7gNT" },
-                { title: "Smoke on the Water", artist: "Deep Purple", year: 1972, spotify: "https://open.spotify.com/track/4DdkRBBYG2JF3xwCUgAB0s" },
-                { title: "Don't Stop Believin'", artist: "Journey", year: 1981, spotify: "https://open.spotify.com/track/4bHsxqR3GMrXTxEPLuK5ue" },
-                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF" },
-                { title: "November Rain", artist: "Guns N' Roses", year: 1991, spotify: "https://open.spotify.com/track/3YRCqOhFifThpSRFJ1VWFM" },
-                { title: "Thunderstruck", artist: "AC/DC", year: 1990, spotify: "https://open.spotify.com/track/57bgtoPSgt236HzfBOd8kj" },
-                { title: "Another One Bites the Dust", artist: "Queen", year: 1980, spotify: "https://open.spotify.com/track/5vdp5UmvTsnMEMESIF2Ym7" }
+                { title: "Bohemian Rhapsody", artist: "Queen", year: 1975, spotify: "https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J", youtube: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ" },
+                { title: "Hotel California", artist: "Eagles", year: 1977, spotify: "https://open.spotify.com/track/40riOy7x9W7GXjyGp4pjAv", youtube: "https://www.youtube.com/watch?v=EqPtz5qN7HM" },
+                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51", youtube: "https://www.youtube.com/watch?v=1w7OgIMMRc4" },
+                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T", youtube: "https://www.youtube.com/watch?v=hTWKbfoikeg" },
+                { title: "Back in Black", artist: "AC/DC", year: 1980, spotify: "https://open.spotify.com/track/08mG3Y1vljYA6bvDt4Wqkj", youtube: "https://www.youtube.com/watch?v=pAgnJDJN4VA" },
+                { title: "Highway to Hell", artist: "AC/DC", year: 1979, spotify: "https://open.spotify.com/track/2zYzyRzz6pRmhPzyfMEC8s", youtube: "https://www.youtube.com/watch?v=l482T0yNkeo" },
+                { title: "Enter Sandman", artist: "Metallica", year: 1991, spotify: "https://open.spotify.com/track/3VqHuw0wFlIHcIPWkhIbdQ", youtube: "https://www.youtube.com/watch?v=CD-E-LDc384" },
+                { title: "Nothing Else Matters", artist: "Metallica", year: 1991, spotify: "https://open.spotify.com/track/0nLiqZ6A27jJri2VCalIUs", youtube: "https://www.youtube.com/watch?v=tAGnKpE4NCI" },
+                { title: "Paradise City", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7d3m4Pp7HfVlmZvmWWHbHw", youtube: "https://www.youtube.com/watch?v=Rbm6GXllBiw" },
+                { title: "We Will Rock You", artist: "Queen", year: 1977, spotify: "https://open.spotify.com/track/54flyrjcdnQdco2300avMJ", youtube: "https://www.youtube.com/watch?v=-tJYN-eG1zk" },
+                { title: "We Are the Champions", artist: "Queen", year: 1977, spotify: "https://open.spotify.com/track/7ccI9cStQbQdystvc6TvxD", youtube: "https://www.youtube.com/watch?v=04854XqcfCY" },
+                { title: "The Final Countdown", artist: "Europe", year: 1986, spotify: "https://open.spotify.com/track/2d4e45fmUnguxh6yqC7gNT", youtube: "https://www.youtube.com/watch?v=9jK-NcRmVcw" },
+                { title: "Smoke on the Water", artist: "Deep Purple", year: 1972, spotify: "https://open.spotify.com/track/4DdkRBBYG2JF3xwCUgAB0s", youtube: "https://www.youtube.com/watch?v=zUwEIt9ez7M" },
+                { title: "Don't Stop Believin'", artist: "Journey", year: 1981, spotify: "https://open.spotify.com/track/4bHsxqR3GMrXTxEPLuK5ue", youtube: "https://www.youtube.com/watch?v=1k8craCGpgs" },
+                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF", youtube: "https://www.youtube.com/watch?v=lDK9QqIzhwk" },
+                { title: "November Rain", artist: "Guns N' Roses", year: 1991, spotify: "https://open.spotify.com/track/3YRCqOhFifThpSRFJ1VWFM", youtube: "https://www.youtube.com/watch?v=8SbUC-UaAxE" },
+                { title: "Thunderstruck", artist: "AC/DC", year: 1990, spotify: "https://open.spotify.com/track/57bgtoPSgt236HzfBOd8kj", youtube: "https://www.youtube.com/watch?v=v2AC41dglnM" },
+                { title: "Another One Bites the Dust", artist: "Queen", year: 1980, spotify: "https://open.spotify.com/track/5vdp5UmvTsnMEMESIF2Ym7", youtube: "https://www.youtube.com/watch?v=rY0WxgSXdEE" }
             ],
             pop_espanol: [
                 { title: "La Bamba", artist: "Los Lobos", year: 1987, spotify: "https://open.spotify.com/track/3GSPCsE5z3sE0nRWgAoSlp" },
@@ -536,99 +547,99 @@
                 { title: "Teardrop", artist: "Massive Attack", year: 2004, spotify: "https://open.spotify.com/track/67Hna13dNDkZvBpTXRIaOJ" }
             ],
             "80s": [
-                { title: "Take On Me", artist: "a-ha", year: 1985, spotify: "https://open.spotify.com/track/2WfaOiMkCvy7F5fcp2zZ8L" },
-                { title: "Billie Jean", artist: "Michael Jackson", year: 1983, spotify: "https://open.spotify.com/track/5ChkMS8OtdzJeqyybCc9R5" },
-                { title: "Like a Virgin", artist: "Madonna", year: 1984, spotify: "https://open.spotify.com/track/1ZPlNanZsJSPK5h9YZZEsT" },
-                { title: "Sweet Dreams", artist: "Eurythmics", year: 1983, spotify: "https://open.spotify.com/track/1TfqLAPs4K3s2rJMoCokcS" },
-                { title: "Every Breath You Take", artist: "The Police", year: 1983, spotify: "https://open.spotify.com/track/1JSTJqkT5qHq8MDJnJbRE1" },
-                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF" },
-                { title: "Africa", artist: "Toto", year: 1982, spotify: "https://open.spotify.com/track/2374M0fQpWi3dLnB54qaLX" },
-                { title: "Total Eclipse of the Heart", artist: "Bonnie Tyler", year: 1983, spotify: "https://open.spotify.com/track/6N6NE9vNbpWEcE8uEYST7u" },
-                { title: "Jump", artist: "Van Halen", year: 1984, spotify: "https://open.spotify.com/track/7N4B4gBpCGUoAlbJgFdKXb" },
-                { title: "The Final Countdown", artist: "Europe", year: 1986, spotify: "https://open.spotify.com/track/2d4e45fmUnguxh6yqC7gNT" },
-                { title: "Girls Just Want to Have Fun", artist: "Cyndi Lauper", year: 1983, spotify: "https://open.spotify.com/track/4y1LsJpmMti1PfRQV9AWWe" },
-                { title: "Purple Rain", artist: "Prince", year: 1984, spotify: "https://open.spotify.com/track/54X78diSLoUDI3joC2bjMz" },
-                { title: "Blue Monday", artist: "New Order", year: 1983, spotify: "https://open.spotify.com/track/0WQiDwKJclirSYG9v5tayI" },
-                { title: "Tainted Love", artist: "Soft Cell", year: 1981, spotify: "https://open.spotify.com/track/3D6CnAGtAwF1tWiMu4HXV3" },
-                { title: "Never Gonna Give You Up", artist: "Rick Astley", year: 1987, spotify: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT" },
-                { title: "I Wanna Dance with Somebody", artist: "Whitney Houston", year: 1987, spotify: "https://open.spotify.com/track/2tUBqZG2AbRi7Q0BIrVrEj" },
-                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51" },
-                { title: "Wake Me Up Before You Go-Go", artist: "Wham!", year: 1984, spotify: "https://open.spotify.com/track/0ikz6tENMONtK6qGkOrU3c" }
+                { title: "Take On Me", artist: "a-ha", year: 1985, spotify: "https://open.spotify.com/track/2WfaOiMkCvy7F5fcp2zZ8L", youtube: "https://www.youtube.com/watch?v=djV11Xbc914" },
+                { title: "Billie Jean", artist: "Michael Jackson", year: 1983, spotify: "https://open.spotify.com/track/5ChkMS8OtdzJeqyybCc9R5", youtube: "https://www.youtube.com/watch?v=Zi_XLOBDo_Y" },
+                { title: "Like a Virgin", artist: "Madonna", year: 1984, spotify: "https://open.spotify.com/track/1ZPlNanZsJSPK5h9YZZEsT", youtube: "https://www.youtube.com/watch?v=s__rX_WL100" },
+                { title: "Sweet Dreams", artist: "Eurythmics", year: 1983, spotify: "https://open.spotify.com/track/1TfqLAPs4K3s2rJMoCokcS", youtube: "https://www.youtube.com/watch?v=qeMFqkcPYcg" },
+                { title: "Every Breath You Take", artist: "The Police", year: 1983, spotify: "https://open.spotify.com/track/1JSTJqkT5qHq8MDJnJbRE1", youtube: "https://www.youtube.com/watch?v=OMOGaugKpzs" },
+                { title: "Livin' on a Prayer", artist: "Bon Jovi", year: 1986, spotify: "https://open.spotify.com/track/37ZJ0p5Jm13JPevGcx4SkF", youtube: "https://www.youtube.com/watch?v=lDK9QqIzhwk" },
+                { title: "Africa", artist: "Toto", year: 1982, spotify: "https://open.spotify.com/track/2374M0fQpWi3dLnB54qaLX", youtube: "https://www.youtube.com/watch?v=FTQbiNvZqaY" },
+                { title: "Total Eclipse of the Heart", artist: "Bonnie Tyler", year: 1983, spotify: "https://open.spotify.com/track/6N6NE9vNbpWEcE8uEYST7u", youtube: "https://www.youtube.com/watch?v=lcOxhH8N3Bo" },
+                { title: "Jump", artist: "Van Halen", year: 1984, spotify: "https://open.spotify.com/track/7N4B4gBpCGUoAlbJgFdKXb", youtube: "https://www.youtube.com/watch?v=SwYN7mTi6HM" },
+                { title: "The Final Countdown", artist: "Europe", year: 1986, spotify: "https://open.spotify.com/track/2d4e45fmUnguxh6yqC7gNT", youtube: "https://www.youtube.com/watch?v=9jK-NcRmVcw" },
+                { title: "Girls Just Want to Have Fun", artist: "Cyndi Lauper", year: 1983, spotify: "https://open.spotify.com/track/4y1LsJpmMti1PfRQV9AWWe", youtube: "https://www.youtube.com/watch?v=PIb6AZdTr-A" },
+                { title: "Purple Rain", artist: "Prince", year: 1984, spotify: "https://open.spotify.com/track/54X78diSLoUDI3joC2bjMz", youtube: "https://www.youtube.com/watch?v=TvnYmWpD_T8" },
+                { title: "Blue Monday", artist: "New Order", year: 1983, spotify: "https://open.spotify.com/track/0WQiDwKJclirSYG9v5tayI", youtube: "https://www.youtube.com/watch?v=FYH8DsU2WCk" },
+                { title: "Tainted Love", artist: "Soft Cell", year: 1981, spotify: "https://open.spotify.com/track/3D6CnAGtAwF1tWiMu4HXV3", youtube: "https://www.youtube.com/watch?v=yDT0yn9jk7M" },
+                { title: "Never Gonna Give You Up", artist: "Rick Astley", year: 1987, spotify: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT", youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+                { title: "I Wanna Dance with Somebody", artist: "Whitney Houston", year: 1987, spotify: "https://open.spotify.com/track/2tUBqZG2AbRi7Q0BIrVrEj", youtube: "https://www.youtube.com/watch?v=eH3giaIzONA" },
+                { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987, spotify: "https://open.spotify.com/track/7o2CTH4ctstm8TNelqjb51", youtube: "https://www.youtube.com/watch?v=1w7OgIMMRc4" },
+                { title: "Wake Me Up Before You Go-Go", artist: "Wham!", year: 1984, spotify: "https://open.spotify.com/track/0ikz6tENMONtK6qGkOrU3c", youtube: "https://www.youtube.com/watch?v=pIgZ7gMze7A" }
             ],
             "90s": [
-                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T" },
-                { title: "Wonderwall", artist: "Oasis", year: 1995, spotify: "https://open.spotify.com/track/1qPbGZqppFwLwcBC1JQ6Vr" },
-                { title: "Creep", artist: "Radiohead", year: 1992, spotify: "https://open.spotify.com/track/70LcF31zb1H0PyJoS1Sx1r" },
-                { title: "Losing My Religion", artist: "R.E.M.", year: 1991, spotify: "https://open.spotify.com/track/31AOj9sFz2gM0O3hMARRBx" },
-                { title: "...Baby One More Time", artist: "Britney Spears", year: 1998, spotify: "https://open.spotify.com/track/3MjUtNVVq3C8Fn0MP3zhXa" },
-                { title: "Wannabe", artist: "Spice Girls", year: 1996, spotify: "https://open.spotify.com/track/1Je1IMUlBXcx1Fz0WE7oPT" },
-                { title: "I Want It That Way", artist: "Backstreet Boys", year: 1999, spotify: "https://open.spotify.com/track/47BBI51FKFwOMlIiX6m8ya" },
-                { title: "Livin' la Vida Loca", artist: "Ricky Martin", year: 1999, spotify: "https://open.spotify.com/track/4VI0SLOYjGJTQFDI0TEFqS" },
-                { title: "Iris", artist: "Goo Goo Dolls", year: 1998, spotify: "https://open.spotify.com/track/6Qyc6fS4DsZjB2mRW9DsQs" },
-                { title: "Bitter Sweet Symphony", artist: "The Verve", year: 1997, spotify: "https://open.spotify.com/track/3EYOJ4WhYZODsyEcpRsnfS" },
-                { title: "Zombie", artist: "The Cranberries", year: 1994, spotify: "https://open.spotify.com/track/7d3m4Pp7HfVlmZvmWWHbHw" },
-                { title: "My Heart Will Go On", artist: "Celine Dion", year: 1997, spotify: "https://open.spotify.com/track/33LC84JgLvK2KuW43MfaNq" },
-                { title: "All Star", artist: "Smash Mouth", year: 1999, spotify: "https://open.spotify.com/track/3cfOd4CMv2snFaKAnMdnvK" },
-                { title: "Torn", artist: "Natalie Imbruglia", year: 1997, spotify: "https://open.spotify.com/track/2hkfv9HxntT1aYdXQxBnH7" },
-                { title: "MMMBop", artist: "Hanson", year: 1997, spotify: "https://open.spotify.com/track/3vy8PdPFYMH9R59qhCp6jP" },
-                { title: "No Scrubs", artist: "TLC", year: 1999, spotify: "https://open.spotify.com/track/5lnQLEUiVDkLbFJHXHQu9m" },
-                { title: "Under the Bridge", artist: "Red Hot Chili Peppers", year: 1992, spotify: "https://open.spotify.com/track/3d9DChrdc6BOeFsbrZ3Is0" }
+                { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991, spotify: "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T", youtube: "https://www.youtube.com/watch?v=hTWKbfoikeg" },
+                { title: "Wonderwall", artist: "Oasis", year: 1995, spotify: "https://open.spotify.com/track/1qPbGZqppFwLwcBC1JQ6Vr", youtube: "https://www.youtube.com/watch?v=bx1Bh8ZvH84" },
+                { title: "Creep", artist: "Radiohead", year: 1992, spotify: "https://open.spotify.com/track/70LcF31zb1H0PyJoS1Sx1r", youtube: "https://www.youtube.com/watch?v=XFkzRNyygfk" },
+                { title: "Losing My Religion", artist: "R.E.M.", year: 1991, spotify: "https://open.spotify.com/track/31AOj9sFz2gM0O3hMARRBx", youtube: "https://www.youtube.com/watch?v=xwtdhWltSIg" },
+                { title: "...Baby One More Time", artist: "Britney Spears", year: 1998, spotify: "https://open.spotify.com/track/3MjUtNVVq3C8Fn0MP3zhXa", youtube: "https://www.youtube.com/watch?v=C-u5WLJ9Yk4" },
+                { title: "Wannabe", artist: "Spice Girls", year: 1996, spotify: "https://open.spotify.com/track/1Je1IMUlBXcx1Fz0WE7oPT", youtube: "https://www.youtube.com/watch?v=gJLIiF15wjQ" },
+                { title: "I Want It That Way", artist: "Backstreet Boys", year: 1999, spotify: "https://open.spotify.com/track/47BBI51FKFwOMlIiX6m8ya", youtube: "https://www.youtube.com/watch?v=4fndeDfaWCg" },
+                { title: "Livin' la Vida Loca", artist: "Ricky Martin", year: 1999, spotify: "https://open.spotify.com/track/4VI0SLOYjGJTQFDI0TEFqS", youtube: "https://www.youtube.com/watch?v=p47fEXGabaY" },
+                { title: "Iris", artist: "Goo Goo Dolls", year: 1998, spotify: "https://open.spotify.com/track/6Qyc6fS4DsZjB2mRW9DsQs", youtube: "https://www.youtube.com/watch?v=NdYWuo9OFAw" },
+                { title: "Bitter Sweet Symphony", artist: "The Verve", year: 1997, spotify: "https://open.spotify.com/track/3EYOJ4WhYZODsyEcpRsnfS", youtube: "https://www.youtube.com/watch?v=1lyu1KKwC74" },
+                { title: "Zombie", artist: "The Cranberries", year: 1994, spotify: "https://open.spotify.com/track/7d3m4Pp7HfVlmZvmWWHbHw", youtube: "https://www.youtube.com/watch?v=6Ejga4kJUts" },
+                { title: "My Heart Will Go On", artist: "Celine Dion", year: 1997, spotify: "https://open.spotify.com/track/33LC84JgLvK2KuW43MfaNq", youtube: "https://www.youtube.com/watch?v=3gK_2XdjOdY" },
+                { title: "All Star", artist: "Smash Mouth", year: 1999, spotify: "https://open.spotify.com/track/3cfOd4CMv2snFaKAnMdnvK", youtube: "https://www.youtube.com/watch?v=L_jWHffIx5E" },
+                { title: "Torn", artist: "Natalie Imbruglia", year: 1997, spotify: "https://open.spotify.com/track/2hkfv9HxntT1aYdXQxBnH7", youtube: "https://www.youtube.com/watch?v=VV1XWJN3nJo" },
+                { title: "MMMBop", artist: "Hanson", year: 1997, spotify: "https://open.spotify.com/track/3vy8PdPFYMH9R59qhCp6jP", youtube: "https://www.youtube.com/watch?v=NHozn0YXAeE" },
+                { title: "No Scrubs", artist: "TLC", year: 1999, spotify: "https://open.spotify.com/track/5lnQLEUiVDkLbFJHXHQu9m", youtube: "https://www.youtube.com/watch?v=FrLequ6dUdM" },
+                { title: "Under the Bridge", artist: "Red Hot Chili Peppers", year: 1992, spotify: "https://open.spotify.com/track/3d9DChrdc6BOeFsbrZ3Is0", youtube: "https://www.youtube.com/watch?v=GLvohMXgcBo" }
             ],
             "2000s": [
-                { title: "Crazy in Love", artist: "Beyoncé", year: 2003, spotify: "https://open.spotify.com/track/5IVuqXILoxVWvWEPm82Jxr" },
-                { title: "Hey Ya!", artist: "OutKast", year: 2003, spotify: "https://open.spotify.com/track/2PpruBYCo4H7WOBJ7Q2EwM" },
-                { title: "Mr. Brightside", artist: "The Killers", year: 2003, spotify: "https://open.spotify.com/track/003vvx7Niy0yvhvHt4a68B" },
-                { title: "Toxic", artist: "Britney Spears", year: 2004, spotify: "https://open.spotify.com/track/6I9VzXrHxO9rA9A5euc8Ak" },
-                { title: "Hips Don't Lie", artist: "Shakira", year: 2006, spotify: "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V" },
-                { title: "Umbrella", artist: "Rihanna", year: 2007, spotify: "https://open.spotify.com/track/2VxeLyX666F8uXCJ0dZF8B" },
-                { title: "Poker Face", artist: "Lady Gaga", year: 2008, spotify: "https://open.spotify.com/track/5R8dQOPq8haW1NHXpOqcF8" },
-                { title: "Clocks", artist: "Coldplay", year: 2002, spotify: "https://open.spotify.com/track/0BCPKOYdS2jbQ8iyB56Cpo" },
-                { title: "Seven Nation Army", artist: "The White Stripes", year: 2003, spotify: "https://open.spotify.com/track/7i2DJ88J7jQ6C7E1GM5GqS" },
-                { title: "Lose Yourself", artist: "Eminem", year: 2002, spotify: "https://open.spotify.com/track/5Z01UMMf7V1o0MzF86s6WJ" },
-                { title: "Viva la Vida", artist: "Coldplay", year: 2008, spotify: "https://open.spotify.com/track/1mea3bSkSGXuIRvnydlB5b" },
-                { title: "Rehab", artist: "Amy Winehouse", year: 2006, spotify: "https://open.spotify.com/track/7woGk0B1U4tpEvZpG0Vvxt" },
-                { title: "Since U Been Gone", artist: "Kelly Clarkson", year: 2004, spotify: "https://open.spotify.com/track/3gTbF1Ftr9QPc5WoRqGVLO" },
-                { title: "In Da Club", artist: "50 Cent", year: 2003, spotify: "https://open.spotify.com/track/6hxqYv7BZsEHaVCWRaH4Z8" },
-                { title: "Yeah!", artist: "Usher", year: 2004, spotify: "https://open.spotify.com/track/3CSpwSzpGfTqIvVIxHaZss" },
-                { title: "I Gotta Feeling", artist: "Black Eyed Peas", year: 2009, spotify: "https://open.spotify.com/track/1b0Y6nNVDq3xKAxQKN7Wzu" }
+                { title: "Crazy in Love", artist: "Beyoncé", year: 2003, spotify: "https://open.spotify.com/track/5IVuqXILoxVWvWEPm82Jxr", youtube: "https://www.youtube.com/watch?v=ViwtNLUqkMY" },
+                { title: "Hey Ya!", artist: "OutKast", year: 2003, spotify: "https://open.spotify.com/track/2PpruBYCo4H7WOBJ7Q2EwM", youtube: "https://www.youtube.com/watch?v=PWgvGjAhvIw" },
+                { title: "Mr. Brightside", artist: "The Killers", year: 2003, spotify: "https://open.spotify.com/track/003vvx7Niy0yvhvHt4a68B", youtube: "https://www.youtube.com/watch?v=gGdGFtwCNBE" },
+                { title: "Toxic", artist: "Britney Spears", year: 2004, spotify: "https://open.spotify.com/track/6I9VzXrHxO9rA9A5euc8Ak", youtube: "https://www.youtube.com/watch?v=LOZuxwVk7TU" },
+                { title: "Hips Don't Lie", artist: "Shakira", year: 2006, spotify: "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V", youtube: "https://www.youtube.com/watch?v=DUT5rEU6pqM" },
+                { title: "Umbrella", artist: "Rihanna", year: 2007, spotify: "https://open.spotify.com/track/2VxeLyX666F8uXCJ0dZF8B", youtube: "https://www.youtube.com/watch?v=CvBfHwUxHIk" },
+                { title: "Poker Face", artist: "Lady Gaga", year: 2008, spotify: "https://open.spotify.com/track/5R8dQOPq8haW1NHXpOqcF8", youtube: "https://www.youtube.com/watch?v=bESGLojNYSo" },
+                { title: "Clocks", artist: "Coldplay", year: 2002, spotify: "https://open.spotify.com/track/0BCPKOYdS2jbQ8iyB56Cpo", youtube: "https://www.youtube.com/watch?v=d020hcWA_Wg" },
+                { title: "Seven Nation Army", artist: "The White Stripes", year: 2003, spotify: "https://open.spotify.com/track/7i2DJ88J7jQ6C7E1GM5GqS", youtube: "https://www.youtube.com/watch?v=0J2QdDbelmY" },
+                { title: "Lose Yourself", artist: "Eminem", year: 2002, spotify: "https://open.spotify.com/track/5Z01UMMf7V1o0MzF86s6WJ", youtube: "https://www.youtube.com/watch?v=_Yhyp-_hX2s" },
+                { title: "Viva la Vida", artist: "Coldplay", year: 2008, spotify: "https://open.spotify.com/track/1mea3bSkSGXuIRvnydlB5b", youtube: "https://www.youtube.com/watch?v=dvgZkm1xWPE" },
+                { title: "Rehab", artist: "Amy Winehouse", year: 2006, spotify: "https://open.spotify.com/track/7woGk0B1U4tpEvZpG0Vvxt", youtube: "https://www.youtube.com/watch?v=KUmZp8pR1uc" },
+                { title: "Since U Been Gone", artist: "Kelly Clarkson", year: 2004, spotify: "https://open.spotify.com/track/3gTbF1Ftr9QPc5WoRqGVLO", youtube: "https://www.youtube.com/watch?v=R7UrFYvl5TE" },
+                { title: "In Da Club", artist: "50 Cent", year: 2003, spotify: "https://open.spotify.com/track/6hxqYv7BZsEHaVCWRaH4Z8", youtube: "https://www.youtube.com/watch?v=5qm8PH4xAss" },
+                { title: "Yeah!", artist: "Usher", year: 2004, spotify: "https://open.spotify.com/track/3CSpwSzpGfTqIvVIxHaZss", youtube: "https://www.youtube.com/watch?v=GxBSyx85Kp8" },
+                { title: "I Gotta Feeling", artist: "Black Eyed Peas", year: 2009, spotify: "https://open.spotify.com/track/1b0Y6nNVDq3xKAxQKN7Wzu", youtube: "https://www.youtube.com/watch?v=uSD4vsh1zDA" }
             ],
             "2010s": [
-                { title: "Shape of You", artist: "Ed Sheeran", year: 2017, spotify: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3" },
-                { title: "Uptown Funk", artist: "Bruno Mars", year: 2014, spotify: "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS" },
-                { title: "Despacito", artist: "Luis Fonsi", year: 2017, spotify: "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb" },
-                { title: "Rolling in the Deep", artist: "Adele", year: 2010, spotify: "https://open.spotify.com/track/1c8gk2PeTE04A1pIDH9YMk" },
-                { title: "Blinding Lights", artist: "The Weeknd", year: 2019, spotify: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b" },
-                { title: "Bad Guy", artist: "Billie Eilish", year: 2019, spotify: "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m" },
-                { title: "Old Town Road", artist: "Lil Nas X", year: 2019, spotify: "https://open.spotify.com/track/2YpeDb67231RjR0MgVLzsG" },
-                { title: "Gangnam Style", artist: "PSY", year: 2012, spotify: "https://open.spotify.com/track/03UrZgTINDqvnUMbbIMhql" },
-                { title: "Call Me Maybe", artist: "Carly Rae Jepsen", year: 2012, spotify: "https://open.spotify.com/track/20I6sIOMTCkB6w7ryavxtO" },
-                { title: "Get Lucky", artist: "Daft Punk", year: 2013, spotify: "https://open.spotify.com/track/2Foc5Q5nqNiosCNqttzHof" },
-                { title: "Happy", artist: "Pharrell Williams", year: 2013, spotify: "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH" },
-                { title: "Thinking Out Loud", artist: "Ed Sheeran", year: 2014, spotify: "https://open.spotify.com/track/34gCuhDGsG4bRPIf9bb02f" },
-                { title: "Shake It Off", artist: "Taylor Swift", year: 2014, spotify: "https://open.spotify.com/track/0cqRj7pUJDkTCEsJkx8snD" },
-                { title: "Closer", artist: "The Chainsmokers", year: 2016, spotify: "https://open.spotify.com/track/7BKLCZ1jbUBVqRi2FVlTVw" },
-                { title: "Havana", artist: "Camila Cabello", year: 2017, spotify: "https://open.spotify.com/track/1rfofaqEpACxVEHIZBJe6W" },
-                { title: "Waka Waka", artist: "Shakira", year: 2010, spotify: "https://open.spotify.com/track/2Cd9iWfcOpGDHLz6tVA3G0" }
+                { title: "Shape of You", artist: "Ed Sheeran", year: 2017, spotify: "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3", youtube: "https://www.youtube.com/watch?v=JGwWNGJdvx8" },
+                { title: "Uptown Funk", artist: "Bruno Mars", year: 2014, spotify: "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS", youtube: "https://www.youtube.com/watch?v=OPf0YbXqDm0" },
+                { title: "Despacito", artist: "Luis Fonsi", year: 2017, spotify: "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb", youtube: "https://www.youtube.com/watch?v=kJQP7kiw5Fk" },
+                { title: "Rolling in the Deep", artist: "Adele", year: 2010, spotify: "https://open.spotify.com/track/1c8gk2PeTE04A1pIDH9YMk", youtube: "https://www.youtube.com/watch?v=rYEDA3JcQqw" },
+                { title: "Blinding Lights", artist: "The Weeknd", year: 2019, spotify: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b", youtube: "https://www.youtube.com/watch?v=4NRXx6U8ABQ" },
+                { title: "Bad Guy", artist: "Billie Eilish", year: 2019, spotify: "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m", youtube: "https://www.youtube.com/watch?v=DyDfgMOUjCI" },
+                { title: "Old Town Road", artist: "Lil Nas X", year: 2019, spotify: "https://open.spotify.com/track/2YpeDb67231RjR0MgVLzsG", youtube: "https://www.youtube.com/watch?v=w2Ov5jzm3j8" },
+                { title: "Gangnam Style", artist: "PSY", year: 2012, spotify: "https://open.spotify.com/track/03UrZgTINDqvnUMbbIMhql", youtube: "https://www.youtube.com/watch?v=9bZkp7q19f0" },
+                { title: "Call Me Maybe", artist: "Carly Rae Jepsen", year: 2012, spotify: "https://open.spotify.com/track/20I6sIOMTCkB6w7ryavxtO", youtube: "https://www.youtube.com/watch?v=fWNaR-rxAic" },
+                { title: "Get Lucky", artist: "Daft Punk", year: 2013, spotify: "https://open.spotify.com/track/2Foc5Q5nqNiosCNqttzHof", youtube: "https://www.youtube.com/watch?v=5NV6Rdv1a3I" },
+                { title: "Happy", artist: "Pharrell Williams", year: 2013, spotify: "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH", youtube: "https://www.youtube.com/watch?v=ZbZSe6N_BXs" },
+                { title: "Thinking Out Loud", artist: "Ed Sheeran", year: 2014, spotify: "https://open.spotify.com/track/34gCuhDGsG4bRPIf9bb02f", youtube: "https://www.youtube.com/watch?v=lp-EO5I60KA" },
+                { title: "Shake It Off", artist: "Taylor Swift", year: 2014, spotify: "https://open.spotify.com/track/0cqRj7pUJDkTCEsJkx8snD", youtube: "https://www.youtube.com/watch?v=nfWlot6h_JM" },
+                { title: "Closer", artist: "The Chainsmokers", year: 2016, spotify: "https://open.spotify.com/track/7BKLCZ1jbUBVqRi2FVlTVw", youtube: "https://www.youtube.com/watch?v=PT2_F-1esPk" },
+                { title: "Havana", artist: "Camila Cabello", year: 2017, spotify: "https://open.spotify.com/track/1rfofaqEpACxVEHIZBJe6W", youtube: "https://www.youtube.com/watch?v=BQ0mxQXmLsk" },
+                { title: "Waka Waka", artist: "Shakira", year: 2010, spotify: "https://open.spotify.com/track/2Cd9iWfcOpGDHLz6tVA3G0", youtube: "https://www.youtube.com/watch?v=pRpeEdMmmQ0" }
             ],
             rock_argentino: [
-                { title: "De Música Ligera", artist: "Soda Stereo", year: 1990, spotify: "https://open.spotify.com/track/5I0CDqJJvh5lM12YuJgqAF" },
-                { title: "Persiana Americana", artist: "Soda Stereo", year: 1986, spotify: "https://open.spotify.com/track/7dT3AGYV4KnSPaXWDfHoQ3" },
-                { title: "En la Ciudad de la Furia", artist: "Soda Stereo", year: 1988, spotify: "https://open.spotify.com/track/5Qbp5nnxU8V6QDd2NoaM7I" },
-                { title: "Cuando Pase el Temblor", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/4eFdN8BLK3qWt6VjKqVVKv" },
-                { title: "La Balsa", artist: "Los Gatos", year: 1967, spotify: "https://open.spotify.com/track/3rA8llK3IEIiMxQxJLJOzS" },
-                { title: "Seminare", artist: "Serú Girán", year: 1978, spotify: "https://open.spotify.com/track/2FvGPV1CKEkDHMgqWiP1Iu" },
-                { title: "Canción de Alicia en el País", artist: "Serú Girán", year: 1980, spotify: "https://open.spotify.com/track/3jCDqBJvRDzNMNqiMzXifl" },
-                { title: "Rasguña las Piedras", artist: "Sui Generis", year: 1973, spotify: "https://open.spotify.com/track/56QPuaTpN2sHkqNvmM2vjW" },
-                { title: "Canción para Mi Muerte", artist: "Sui Generis", year: 1972, spotify: "https://open.spotify.com/track/2qbJuhk6CJ7vvfkrMuzqtG" },
-                { title: "Muchacha Ojos de Papel", artist: "Almendra", year: 1969, spotify: "https://open.spotify.com/track/5dJ0F6ROvBHxUEJhcFfLj3" },
-                { title: "Solo le Pido a Dios", artist: "León Gieco", year: 1978, spotify: "https://open.spotify.com/track/4lzp0PWRP4Db47WBnYqGxL" },
-                { title: "La Memoria", artist: "León Gieco", year: 2001, spotify: "https://open.spotify.com/track/6gNi7m8JzQd5vL1gEL5gJQ" },
-                { title: "Inconsciente Colectivo", artist: "Charly García", year: 1982, spotify: "https://open.spotify.com/track/3LvzEaZjH2vLYm9DJh9cJW" },
-                { title: "Demoliendo Hoteles", artist: "Charly García", year: 1984, spotify: "https://open.spotify.com/track/1JGYJ5M4WRVhJaQ2JVT7VZ" },
-                { title: "Lamento Boliviano", artist: "Enanitos Verdes", year: 1994, spotify: "https://open.spotify.com/track/3zSTUijrNLK2W3J1HAJR2h" },
-                { title: "Ji Ji Ji", artist: "Los Redonditos", year: 1986, spotify: "https://open.spotify.com/track/5PPBrVcTi3ZGVYfvCvhgBb" },
-                { title: "Amanece", artist: "Virus", year: 1985, spotify: "https://open.spotify.com/track/3F5dL5hQTmYKROhFKtCDNk" },
-                { title: "Luna de Miel en la Mano", artist: "Virus", year: 1984, spotify: "https://open.spotify.com/track/1qMFPdNOPAiPxAMw0A4rFS" }
+                { title: "De Música Ligera", artist: "Soda Stereo", year: 1990, spotify: "https://open.spotify.com/track/5I0CDqJJvh5lM12YuJgqAF", youtube: "https://www.youtube.com/watch?v=iXvEjPbQSbg" },
+                { title: "Persiana Americana", artist: "Soda Stereo", year: 1986, spotify: "https://open.spotify.com/track/7dT3AGYV4KnSPaXWDfHoQ3", youtube: "https://www.youtube.com/watch?v=9hL3gwAl-Ew" },
+                { title: "En la Ciudad de la Furia", artist: "Soda Stereo", year: 1988, spotify: "https://open.spotify.com/track/5Qbp5nnxU8V6QDd2NoaM7I", youtube: "https://www.youtube.com/watch?v=aQSP6dEqdBE" },
+                { title: "Cuando Pase el Temblor", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/4eFdN8BLK3qWt6VjKqVVKv", youtube: "https://www.youtube.com/watch?v=IJwGZsfe8rM" },
+                { title: "La Balsa", artist: "Los Gatos", year: 1967, spotify: "https://open.spotify.com/track/3rA8llK3IEIiMxQxJLJOzS", youtube: "https://www.youtube.com/watch?v=QSAJ19foP5k" },
+                { title: "Seminare", artist: "Serú Girán", year: 1978, spotify: "https://open.spotify.com/track/2FvGPV1CKEkDHMgqWiP1Iu", youtube: "https://www.youtube.com/watch?v=YdKpj0qMsOw" },
+                { title: "Canción de Alicia en el País", artist: "Serú Girán", year: 1980, spotify: "https://open.spotify.com/track/3jCDqBJvRDzNMNqiMzXifl", youtube: "https://www.youtube.com/watch?v=mLGbgHmlU1Q" },
+                { title: "Rasguña las Piedras", artist: "Sui Generis", year: 1973, spotify: "https://open.spotify.com/track/56QPuaTpN2sHkqNvmM2vjW", youtube: "https://www.youtube.com/watch?v=SHDJZ8dBnXQ" },
+                { title: "Canción para Mi Muerte", artist: "Sui Generis", year: 1972, spotify: "https://open.spotify.com/track/2qbJuhk6CJ7vvfkrMuzqtG", youtube: "https://www.youtube.com/watch?v=sgrL9OwPp1E" },
+                { title: "Muchacha Ojos de Papel", artist: "Almendra", year: 1969, spotify: "https://open.spotify.com/track/5dJ0F6ROvBHxUEJhcFfLj3", youtube: "https://www.youtube.com/watch?v=rrNWjJPJpWw" },
+                { title: "Solo le Pido a Dios", artist: "León Gieco", year: 1978, spotify: "https://open.spotify.com/track/4lzp0PWRP4Db47WBnYqGxL", youtube: "https://www.youtube.com/watch?v=xdCOlGpIrmg" },
+                { title: "La Memoria", artist: "León Gieco", year: 2001, spotify: "https://open.spotify.com/track/6gNi7m8JzQd5vL1gEL5gJQ", youtube: "https://www.youtube.com/watch?v=bTp6-6Iz5fE" },
+                { title: "Inconsciente Colectivo", artist: "Charly García", year: 1982, spotify: "https://open.spotify.com/track/3LvzEaZjH2vLYm9DJh9cJW", youtube: "https://www.youtube.com/watch?v=WEEgZQjr5WU" },
+                { title: "Demoliendo Hoteles", artist: "Charly García", year: 1984, spotify: "https://open.spotify.com/track/1JGYJ5M4WRVhJaQ2JVT7VZ", youtube: "https://www.youtube.com/watch?v=5_K3mMNR5S0" },
+                { title: "Lamento Boliviano", artist: "Enanitos Verdes", year: 1994, spotify: "https://open.spotify.com/track/3zSTUijrNLK2W3J1HAJR2h", youtube: "https://www.youtube.com/watch?v=kNjb7Xj-zXw" },
+                { title: "Ji Ji Ji", artist: "Los Redonditos", year: 1986, spotify: "https://open.spotify.com/track/5PPBrVcTi3ZGVYfvCvhgBb", youtube: "https://www.youtube.com/watch?v=2zPoJhAhf3Y" },
+                { title: "Amanece", artist: "Virus", year: 1985, spotify: "https://open.spotify.com/track/3F5dL5hQTmYKROhFKtCDNk", youtube: "https://www.youtube.com/watch?v=ZnqEVBCwdrw" },
+                { title: "Luna de Miel en la Mano", artist: "Virus", year: 1984, spotify: "https://open.spotify.com/track/1qMFPdNOPAiPxAMw0A4rFS", youtube: "https://www.youtube.com/watch?v=8bQbNrHp_38" }
             ]
         };
 
@@ -691,6 +702,7 @@
         function selectCategory(category) {
             currentCategory = category;
             document.getElementById('selected-category-name').textContent = categoryNames[category];
+            setupQuestionScreen();
             goToScreen('screen-question');
         }
 
@@ -705,18 +717,62 @@
             goToScreen('screen-ready');
         }
 
+        // Filtrar preguntas según categoría
+        function setupQuestionScreen() {
+            const decadeCategories = ['80s', '90s', '2000s', '2010s'];
+            const decadeBtn = document.getElementById('btn-decade');
+            
+            if (decadeCategories.includes(currentCategory)) {
+                decadeBtn.style.display = 'none';
+            } else {
+                decadeBtn.style.display = 'flex';
+            }
+        }
+
+        let selectedPlatform = null;
+
+        function startCountdown(platform) {
+            selectedPlatform = platform;
+            goToScreen('screen-countdown');
+            let count = 3;
+            const countdownEl = document.getElementById('countdown-number');
+            countdownEl.textContent = count;
+            
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownEl.textContent = count;
+                } else {
+                    clearInterval(interval);
+                    countdownEl.textContent = '🎵';
+                    
+                    setTimeout(() => {
+                        if (selectedPlatform === 'spotify') {
+                            openSpotify();
+                        } else {
+                            openYouTube();
+                        }
+                    }, 500);
+                }
+            }, 1000);
+        }
+
         function openSpotify() {
             // Extraer el ID de la canción del link
             const trackId = currentSong.spotify.split('/track/')[1];
             // Usar URI de Spotify para abrir la app directamente
-            window.location.href = 'spotify:track:' + trackId;
+            window.open('spotify:track:' + trackId, '_blank');
             showAnswer();
         }
 
         function openYouTube() {
-            // Buscar la canción en YouTube
-            const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist);
-            window.location.href = 'https://www.youtube.com/results?search_query=' + searchQuery;
+            // Usar link directo de YouTube
+            if (currentSong.youtube) {
+                window.open(currentSong.youtube, '_blank');
+            } else {
+                const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist + ' official');
+                window.open('https://www.youtube.com/results?search_query=' + searchQuery, '_blank');
+            }
             showAnswer();
         }
 
@@ -753,6 +809,14 @@
             document.getElementById('full-artist').textContent = currentSong.artist;
             document.getElementById('full-year').textContent = currentSong.year;
             document.getElementById('full-decade').textContent = getDecade(currentSong.year);
+            
+            // Mostrar película si existe
+            if (currentSong.movie) {
+                document.getElementById('full-movie').textContent = currentSong.movie;
+                document.getElementById('full-movie-container').style.display = 'block';
+            } else {
+                document.getElementById('full-movie-container').style.display = 'none';
+            }
             
             // Ocultar info completa
             document.getElementById('full-info').classList.remove('visible');
