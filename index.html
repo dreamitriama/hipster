@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v12</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v13</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -358,19 +358,26 @@
             </button>
         </div>
 
+        <!-- Pantalla 3: Elegir plataforma -->
+        <div id="screen-platform" class="screen countdown-screen">
+            <div class="countdown-text">¿Dónde reproducir?</div>
+            <div class="countdown-number">🎵</div>
+            <div class="countdown-text">Elige y prepárate para girar el móvil</div>
+            <div style="display: flex; gap: 15px; margin-top: 40px;">
+                <button class="btn" onclick="selectPlatform('spotify')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%);">
+                    🎧 Spotify
+                </button>
+                <button class="btn" onclick="selectPlatform('youtube')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%);">
+                    ▶️ YouTube
+                </button>
+            </div>
+        </div>
+
         <!-- Pantalla 4: Cuenta atrás -->
         <div id="screen-countdown" class="screen countdown-screen">
             <div class="countdown-text" id="countdown-text">¡Gira el móvil!</div>
             <div class="countdown-number" id="countdown-number">3</div>
-            <div class="countdown-subtext" id="countdown-subtext">Abriendo en...</div>
-            <div id="countdown-buttons" style="display: none; margin-top: 30px;">
-                <button class="btn" onclick="openSpotify()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%); margin: 5px;">
-                    🎧 Abrir Spotify
-                </button>
-                <button class="btn" onclick="openYouTube()" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%); margin: 5px;">
-                    ▶️ Abrir YouTube
-                </button>
-            </div>
+            <div class="countdown-subtext" id="countdown-subtext"></div>
         </div>
 
         <!-- Pantalla 5: Respuesta -->
@@ -710,7 +717,14 @@
             const availableSongs = getSongsForCategory(currentCategory);
             currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
             
-            // Ir directamente a cuenta atrás
+            // Ir a selección de plataforma
+            goToScreen('screen-platform');
+        }
+        
+        let selectedPlatform = null;
+        
+        function selectPlatform(platform) {
+            selectedPlatform = platform;
             startCountdown();
         }
 
@@ -739,10 +753,8 @@
         function startCountdown() {
             goToScreen('screen-countdown');
             
-            // Reset
-            document.getElementById('countdown-buttons').style.display = 'none';
-            document.getElementById('countdown-text').textContent = '¡Prepárate!';
-            document.getElementById('countdown-subtext').textContent = 'Gira el móvil en...';
+            document.getElementById('countdown-text').textContent = '¡Gira el móvil!';
+            document.getElementById('countdown-subtext').textContent = '';
             
             let count = 3;
             const countdownEl = document.getElementById('countdown-number');
@@ -755,29 +767,37 @@
                 } else {
                     clearInterval(interval);
                     countdownEl.textContent = '🎵';
-                    document.getElementById('countdown-text').textContent = '¡YA!';
-                    document.getElementById('countdown-subtext').textContent = 'Pulsa y gira el móvil';
-                    document.getElementById('countdown-buttons').style.display = 'block';
+                    document.getElementById('countdown-text').textContent = '¡Abriendo!';
+                    
+                    // Abrir automáticamente después de un momento
+                    setTimeout(() => {
+                        if (selectedPlatform === 'spotify') {
+                            openSpotify();
+                        } else {
+                            openYouTube();
+                        }
+                    }, 300);
                 }
             }, 1000);
         }
 
         function openSpotify() {
-            // Extraer el ID de la canción del link
             const trackId = currentSong.spotify.split('/track/')[1];
-            // Usar URI de Spotify para abrir la app directamente
-            window.location.href = 'spotify:track:' + trackId;
+            const link = document.createElement('a');
+            link.href = 'spotify:track:' + trackId;
+            link.click();
             setTimeout(showAnswer, 500);
         }
 
         function openYouTube() {
-            // Usar link directo de YouTube
+            const link = document.createElement('a');
             if (currentSong.youtube) {
-                window.location.href = currentSong.youtube;
+                link.href = currentSong.youtube;
             } else {
                 const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist + ' official');
-                window.location.href = 'https://www.youtube.com/results?search_query=' + searchQuery;
+                link.href = 'https://www.youtube.com/results?search_query=' + searchQuery;
             }
+            link.click();
             setTimeout(showAnswer, 500);
         }
 
