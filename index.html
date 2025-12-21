@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v13</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v15</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -318,7 +318,30 @@
             </div>
         </div>
 
-        <!-- Pantalla 2: Tipo de pregunta -->
+        <!-- Pantalla 2: Elegir plataforma y escuchar -->
+        <div id="screen-platform" class="screen">
+            <h2 style="margin-bottom: 10px;">🎵 Nueva canción</h2>
+            <p style="opacity: 0.7; margin-bottom: 30px;">Escucha y vuelve para adivinar</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 280px;">
+                <a id="link-spotify" href="#" class="btn" style="display: block; text-align: center; font-size: 1.2rem; padding: 20px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%); text-decoration: none;">
+                    🎧 Abrir Spotify
+                </a>
+                <a id="link-youtube" href="#" class="btn" style="display: block; text-align: center; font-size: 1.2rem; padding: 20px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%); text-decoration: none;">
+                    ▶️ Abrir YouTube
+                </a>
+            </div>
+            
+            <button class="btn" onclick="goToScreen('screen-question')" style="margin-top: 40px; background: linear-gradient(145deg, #667eea 0%, #764ba2 100%); font-size: 1.1rem; padding: 18px 40px;">
+                ✓ Ya la he escuchado
+            </button>
+            
+            <button class="btn btn-back" onclick="goToScreen('screen-categories')" style="margin-top: 15px;">
+                ← Cambiar categoría
+            </button>
+        </div>
+
+        <!-- Pantalla 3: Elegir pregunta -->
         <div id="screen-question" class="screen">
             <h2>¿Qué hay que adivinar?</h2>
             
@@ -353,34 +376,12 @@
                 </button>
             </div>
 
-            <button class="btn btn-back" onclick="goToScreen('screen-categories')">
-                ← Cambiar categoría
+            <button class="btn btn-back" onclick="goToScreen('screen-platform')">
+                ← Volver a escuchar
             </button>
         </div>
 
-        <!-- Pantalla 3: Elegir plataforma -->
-        <div id="screen-platform" class="screen countdown-screen">
-            <div class="countdown-text">¿Dónde reproducir?</div>
-            <div class="countdown-number">🎵</div>
-            <div class="countdown-text">Elige y prepárate para girar el móvil</div>
-            <div style="display: flex; gap: 15px; margin-top: 40px;">
-                <button class="btn" onclick="selectPlatform('spotify')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%);">
-                    🎧 Spotify
-                </button>
-                <button class="btn" onclick="selectPlatform('youtube')" style="font-size: 1.1rem; padding: 18px 30px; background: linear-gradient(145deg, #FF0000 0%, #cc0000 100%);">
-                    ▶️ YouTube
-                </button>
-            </div>
-        </div>
-
-        <!-- Pantalla 4: Cuenta atrás -->
-        <div id="screen-countdown" class="screen countdown-screen">
-            <div class="countdown-text" id="countdown-text">¡Gira el móvil!</div>
-            <div class="countdown-number" id="countdown-number">3</div>
-            <div class="countdown-subtext" id="countdown-subtext"></div>
-        </div>
-
-        <!-- Pantalla 5: Respuesta -->
+        <!-- Pantalla 4: Respuesta -->
         <div id="screen-answer" class="screen answer-screen">
             <h2>🎉 ¡Respuesta!</h2>
             
@@ -705,27 +706,30 @@
 
         function selectCategory(category) {
             currentCategory = category;
-            document.getElementById('selected-category-name').textContent = categoryNames[category];
-            setupQuestionScreen();
-            goToScreen('screen-question');
-        }
-
-        function selectQuestion(question) {
-            currentQuestion = question;
             
             // Seleccionar canción aleatoria
             const availableSongs = getSongsForCategory(currentCategory);
             currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
             
-            // Ir a selección de plataforma
+            // Preparar los links
+            const trackId = currentSong.spotify.split('/track/')[1];
+            document.getElementById('link-spotify').href = 'spotify:track:' + trackId;
+            
+            if (currentSong.youtube) {
+                document.getElementById('link-youtube').href = currentSong.youtube;
+            } else {
+                const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist + ' official');
+                document.getElementById('link-youtube').href = 'https://www.youtube.com/results?search_query=' + searchQuery;
+            }
+            
+            document.getElementById('selected-category-name').textContent = categoryNames[category];
+            setupQuestionScreen();
             goToScreen('screen-platform');
         }
-        
-        let selectedPlatform = null;
-        
-        function selectPlatform(platform) {
-            selectedPlatform = platform;
-            startCountdown();
+
+        function selectQuestion(question) {
+            currentQuestion = question;
+            showAnswer();
         }
 
         // Filtrar preguntas según categoría
@@ -750,56 +754,6 @@
             }
         }
 
-        function startCountdown() {
-            goToScreen('screen-countdown');
-            
-            document.getElementById('countdown-text').textContent = '¡Gira el móvil!';
-            document.getElementById('countdown-subtext').textContent = '';
-            
-            let count = 3;
-            const countdownEl = document.getElementById('countdown-number');
-            countdownEl.textContent = count;
-            
-            const interval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownEl.textContent = count;
-                } else {
-                    clearInterval(interval);
-                    countdownEl.textContent = '🎵';
-                    document.getElementById('countdown-text').textContent = '¡Abriendo!';
-                    
-                    // Abrir automáticamente después de un momento
-                    setTimeout(() => {
-                        if (selectedPlatform === 'spotify') {
-                            openSpotify();
-                        } else {
-                            openYouTube();
-                        }
-                    }, 300);
-                }
-            }, 1000);
-        }
-
-        function openSpotify() {
-            const trackId = currentSong.spotify.split('/track/')[1];
-            const link = document.createElement('a');
-            link.href = 'spotify:track:' + trackId;
-            link.click();
-            setTimeout(showAnswer, 500);
-        }
-
-        function openYouTube() {
-            const link = document.createElement('a');
-            if (currentSong.youtube) {
-                link.href = currentSong.youtube;
-            } else {
-                const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist + ' official');
-                link.href = 'https://www.youtube.com/results?search_query=' + searchQuery;
-            }
-            link.click();
-            setTimeout(showAnswer, 500);
-        }
 
         function showAnswer() {
             // Preparar respuesta según tipo de pregunta
@@ -860,7 +814,22 @@
         }
 
         function nextSong() {
-            goToScreen('screen-question');
+            // Seleccionar nueva canción
+            const availableSongs = getSongsForCategory(currentCategory);
+            currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
+            
+            // Preparar los links
+            const trackId = currentSong.spotify.split('/track/')[1];
+            document.getElementById('link-spotify').href = 'spotify:track:' + trackId;
+            
+            if (currentSong.youtube) {
+                document.getElementById('link-youtube').href = currentSong.youtube;
+            } else {
+                const searchQuery = encodeURIComponent(currentSong.title + ' ' + currentSong.artist + ' official');
+                document.getElementById('link-youtube').href = 'https://www.youtube.com/results?search_query=' + searchQuery;
+            }
+            
+            goToScreen('screen-platform');
         }
     </script>
 </body>
