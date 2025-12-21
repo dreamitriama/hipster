@@ -257,7 +257,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v25</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v26</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -880,7 +880,7 @@
         }
         
         function getRandomQuestion() {
-            const questions = ['year', 'decade', 'artist', 'title'];
+            const questions = ['year', 'decade', 'near', 'artist', 'title'];
             // Añadir 'movie' si la canción tiene película/serie
             if (currentSong.movie) {
                 questions.push('movie');
@@ -892,6 +892,10 @@
             if (isRandomMode) {
                 randomQuestion = getRandomQuestion();
                 currentQuestion = randomQuestion;
+                // Si es ±3, mostrar año exacto para comparar
+                if (randomQuestion === 'near') {
+                    currentQuestion = 'year';
+                }
                 showAnswer();
             } else {
                 goToScreen('screen-question');
@@ -913,6 +917,7 @@
                 const questionNames = {
                     'year': '📅 AÑO EXACTO',
                     'decade': '📆 DÉCADA',
+                    'near': '🎯 ±3 AÑOS',
                     'artist': '🎤 ARTISTA',
                     'title': '🎵 TÍTULO',
                     'movie': '🎬 PELÍCULA/SERIE'
@@ -933,7 +938,8 @@
                 if (countdownSeconds <= 0) {
                     clearInterval(countdownInterval);
                     if (isRandomMode) {
-                        currentQuestion = randomQuestion;
+                        // Si era ±3, mostrar año exacto para comparar
+                        currentQuestion = (randomQuestion === 'near') ? 'year' : randomQuestion;
                         showAnswer();
                     } else {
                         goToScreen('screen-question');
@@ -947,7 +953,8 @@
                 clearInterval(countdownInterval);
             }
             if (isRandomMode) {
-                currentQuestion = randomQuestion;
+                // Si era ±3, mostrar año exacto para comparar
+                currentQuestion = (randomQuestion === 'near') ? 'year' : randomQuestion;
                 showAnswer();
             } else {
                 goToScreen('screen-question');
