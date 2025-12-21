@@ -251,7 +251,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v15</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v16</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -711,9 +711,8 @@
             const availableSongs = getSongsForCategory(currentCategory);
             currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
             
-            // Preparar los links
-            const trackId = currentSong.spotify.split('/track/')[1];
-            document.getElementById('link-spotify').href = 'spotify:track:' + trackId;
+            // Preparar los links - usar URL normal, no URI
+            document.getElementById('link-spotify').href = currentSong.spotify;
             
             if (currentSong.youtube) {
                 document.getElementById('link-youtube').href = currentSong.youtube;
@@ -818,9 +817,8 @@
             const availableSongs = getSongsForCategory(currentCategory);
             currentSong = availableSongs[Math.floor(Math.random() * availableSongs.length)];
             
-            // Preparar los links
-            const trackId = currentSong.spotify.split('/track/')[1];
-            document.getElementById('link-spotify').href = 'spotify:track:' + trackId;
+            // Preparar los links - usar URL normal, no URI
+            document.getElementById('link-spotify').href = currentSong.spotify;
             
             if (currentSong.youtube) {
                 document.getElementById('link-youtube').href = currentSong.youtube;
