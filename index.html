@@ -257,7 +257,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v18</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v22</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -285,9 +285,9 @@
                     <span class="category-icon">🎬</span>
                     <span>BSO Películas</span>
                 </button>
-                <button class="category-btn" onclick="toggleCategory('disco')" id="cat-disco">
+                <button class="category-btn" onclick="toggleCategory('dance')" id="cat-dance">
                     <span class="category-icon">🕺</span>
-                    <span>Disco</span>
+                    <span>Dance</span>
                 </button>
                 <button class="category-btn" onclick="toggleCategory('rock')" id="cat-rock">
                     <span class="category-icon">🤘</span>
@@ -317,19 +317,29 @@
         </div>
 
         <!-- Pantalla 2: Elegir plataforma y escuchar -->
-        <div id="screen-platform" class="screen">
+        <div id="screen-platform" class="screen" style="align-items: center;">
             <h2 style="margin-bottom: 10px;">🎵 Nueva canción</h2>
-            <p style="opacity: 0.7; margin-bottom: 30px;">Escucha y vuelve para adivinar</p>
+            <p style="opacity: 0.7; margin-bottom: 30px;" id="platform-subtitle">Escucha y adivina</p>
             
-            <a id="link-spotify" href="#" class="btn" style="display: block; text-align: center; font-size: 1.4rem; padding: 25px 50px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%); text-decoration: none; max-width: 300px;">
+            <a id="link-spotify" href="#" class="btn" style="display: block; text-align: center; font-size: 1.4rem; padding: 25px 50px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%); text-decoration: none; width: 80%; max-width: 300px;">
                 🎧 Escuchar
             </a>
             
-            <button class="btn" onclick="goToScreen('screen-question')" style="margin-top: 40px; background: linear-gradient(145deg, #667eea 0%, #764ba2 100%); font-size: 1.1rem; padding: 18px 40px;">
-                ✓ Ya la he escuchado
+            <button id="btn-listening" class="btn" onclick="startCountdown()" style="margin-top: 20px; background: linear-gradient(145deg, #667eea 0%, #764ba2 100%); font-size: 1.1rem; padding: 18px 40px; width: 80%; max-width: 300px;">
+                🎵 Escuchando...
             </button>
             
-            <button class="btn btn-back" onclick="resetCategories()" style="margin-top: 15px;">
+            <button id="btn-ready" class="btn" onclick="goToScreen('screen-question')" style="margin-top: 15px; background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%); font-size: 1.1rem; padding: 18px 40px; width: 80%; max-width: 300px;">
+                ✓ Ya he escuchado
+            </button>
+            
+            <!-- Cuenta atrás (oculta inicialmente) -->
+            <div id="countdown-container" style="display: none; margin-top: 30px; text-align: center;">
+                <div style="font-size: 4rem; font-weight: bold;" id="countdown-number">30</div>
+                <p style="opacity: 0.7;">segundos</p>
+            </div>
+            
+            <button class="btn btn-back" onclick="resetCategories()" style="margin-top: 20px; width: 80%; max-width: 300px;">
                 ← Cambiar categoría
             </button>
         </div>
@@ -470,7 +480,7 @@
                 { title: "You're The One That I Want", artist: "Grease", year: 1978, movie: "Grease", spotify: "https://open.spotify.com/track/2I9P2XSDFBL7kldaPZmVsG" },
                 { title: "Don't You Forget About Me", artist: "Simple Minds", year: 1985, movie: "El Club de los Cinco", spotify: "https://open.spotify.com/track/0WqIKmW4BTrj3eJFmnCKMv" }
             ],
-            disco: [
+            dance: [
                 { title: "Stayin' Alive", artist: "Bee Gees", year: 1977, spotify: "https://open.spotify.com/track/3mRM4NM8iO7UBqrSigCQFH" },
                 { title: "I Will Survive", artist: "Gloria Gaynor", year: 1978, spotify: "https://open.spotify.com/track/7rSMEcqv3Nz2UWZvzKZXAk" },
                 { title: "September", artist: "Earth, Wind & Fire", year: 1978, spotify: "https://open.spotify.com/track/2grjqo0Frpf2okIBiifQKs" },
@@ -486,8 +496,26 @@
                 { title: "Daddy Cool", artist: "Boney M", year: 1976, spotify: "https://open.spotify.com/track/5cMU0GIosTxR0uODjOBn2V" },
                 { title: "Gimme! Gimme! Gimme!", artist: "ABBA", year: 1979, spotify: "https://open.spotify.com/track/2fmGLslTWVwPprwBdPqFcm" },
                 { title: "Disco Inferno", artist: "The Trammps", year: 1976, spotify: "https://open.spotify.com/track/7F3HLLbXwPKevtRHua9Kzk" },
-                { title: "Last Dance", artist: "Donna Summer", year: 1978, spotify: "https://open.spotify.com/track/0Fi7vJCMKfSqUsKpjoJSsY" },
-                { title: "Rivers of Babylon", artist: "Boney M", year: 1978, spotify: "https://open.spotify.com/track/2iEiVel0RbRrKpRdR8GBOA" }
+                { title: "What Is Love", artist: "Haddaway", year: 1993, spotify: "https://open.spotify.com/track/2fgGCJILCgLjR5zTtrETkI" },
+                { title: "Rhythm of the Night", artist: "Corona", year: 1993, spotify: "https://open.spotify.com/track/0lFOPGOQFgNZNc3WGXWPJC" },
+                { title: "Rhythm Is a Dancer", artist: "Snap!", year: 1992, spotify: "https://open.spotify.com/track/3E7dfMvvCLUddWissuqMwr" },
+                { title: "No Limit", artist: "2 Unlimited", year: 1993, spotify: "https://open.spotify.com/track/5TclCnFvmPIIC7GlFmhqZy" },
+                { title: "Be My Lover", artist: "La Bouche", year: 1995, spotify: "https://open.spotify.com/track/62hD2WqPlHnJTVyZTLluU7" },
+                { title: "Blue (Da Ba Dee)", artist: "Eiffel 65", year: 1999, spotify: "https://open.spotify.com/track/2MUhfsf7Xnj1Z7q0nGEQUq" },
+                { title: "Barbie Girl", artist: "Aqua", year: 1997, spotify: "https://open.spotify.com/track/2HRfqUgo8m4a1uxPqPrUGO" },
+                { title: "Sandstorm", artist: "Darude", year: 1999, spotify: "https://open.spotify.com/track/6Sy9BUbgFse0n0LPA5lwy5" },
+                { title: "Calabria 2007", artist: "Enur", year: 2007, spotify: "https://open.spotify.com/track/2p6ViamfKKE0z4noLNO3pU" },
+                { title: "One More Time", artist: "Daft Punk", year: 2000, spotify: "https://open.spotify.com/track/0DiWol3AO6WpXZgp0goxAV" },
+                { title: "Around the World", artist: "Daft Punk", year: 1997, spotify: "https://open.spotify.com/track/1pKYYY0dkg23sQQXi0Q5zN" },
+                { title: "Titanium", artist: "David Guetta", year: 2011, spotify: "https://open.spotify.com/track/0lHAMNU8RGiIObScrsRgmP" },
+                { title: "Levels", artist: "Avicii", year: 2011, spotify: "https://open.spotify.com/track/0mHyWwEc1QVFS2V9BLNvsA" },
+                { title: "Wake Me Up", artist: "Avicii", year: 2013, spotify: "https://open.spotify.com/track/0nrRP2bk19rLc0orkWPQk2" },
+                { title: "Party Rock Anthem", artist: "LMFAO", year: 2011, spotify: "https://open.spotify.com/track/3JvrhDOgAt6p7K8mDyZwRd" },
+                { title: "I Gotta Feeling", artist: "Black Eyed Peas", year: 2009, spotify: "https://open.spotify.com/track/1b0Y6nNVDq3xKAxQKN7Wzu" },
+                { title: "Don't You Worry Child", artist: "Swedish House Mafia", year: 2012, spotify: "https://open.spotify.com/track/3bH4HzoZZFq8UpZmI2AMgV" },
+                { title: "Animals", artist: "Martin Garrix", year: 2013, spotify: "https://open.spotify.com/track/6xM3Cb8wgMqnDOw8BvYwac" },
+                { title: "Turn Down for What", artist: "DJ Snake", year: 2013, spotify: "https://open.spotify.com/track/4H44tlBqxgrjSHgBKQUwmm" },
+                { title: "Lean On", artist: "Major Lazer", year: 2015, spotify: "https://open.spotify.com/track/0tBbt8CrmxbjRP0pueQkyU" }
             ],
             rock: [
                 { title: "Bohemian Rhapsody", artist: "Queen", year: 1975, spotify: "https://open.spotify.com/track/7tFiyTwD0nx5a1eklYtX2J" },
@@ -546,24 +574,18 @@
                 { title: "Teardrop", artist: "Massive Attack", year: 1998, movie: "House", spotify: "https://open.spotify.com/track/67Hna13dNDkZvBpTXRIaOJ" }
             ],
             rock_argentino: [
-                { title: "De Música Ligera", artist: "Soda Stereo", year: 1990, spotify: "https://open.spotify.com/track/2lpIh6Gr6HYjg1CFBaucS5" },
-                { title: "Persiana Americana", artist: "Soda Stereo", year: 1986, spotify: "https://open.spotify.com/track/71awpJoi5bqGMBrTkHDDoL" },
-                { title: "En la Ciudad de la Furia", artist: "Soda Stereo", year: 1988, spotify: "https://open.spotify.com/track/1lSoorFgnpKLOMC6xPCmrG" },
-                { title: "Cuando Pase el Temblor", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/0Xzujtt7URbgPTaNuhTwji" },
-                { title: "Música Ligera", artist: "Soda Stereo", year: 1990, spotify: "https://open.spotify.com/track/2WD9ggmpZE7Wodh3qVVCgg" },
-                { title: "Prófugos", artist: "Soda Stereo", year: 1986, spotify: "https://open.spotify.com/track/3JJC5GlGKRbJteQSn9EaGE" },
-                { title: "Seminare", artist: "Serú Girán", year: 1978, spotify: "https://open.spotify.com/track/74Mtwv7W8bRlt5UM7M79bB" },
-                { title: "Canción de Alicia en el País", artist: "Serú Girán", year: 1980, spotify: "https://open.spotify.com/track/2esjgMRyUmIJ0w5hPD9nZM" },
-                { title: "Rasguña las Piedras", artist: "Sui Generis", year: 1973, spotify: "https://open.spotify.com/track/4UDdJOqOnWMXxYy1OsMJGD" },
-                { title: "Canción para Mi Muerte", artist: "Sui Generis", year: 1972, spotify: "https://open.spotify.com/track/1pYHKwNPByCrMTqSfDCPjb" },
-                { title: "Muchacha Ojos de Papel", artist: "Almendra", year: 1969, spotify: "https://open.spotify.com/track/4N9G5aIH5pWdJAqXxqT6gM" },
-                { title: "Solo le Pido a Dios", artist: "León Gieco", year: 1978, spotify: "https://open.spotify.com/track/2TLxCiklZhqFNFHLrxjwjP" },
-                { title: "Inconsciente Colectivo", artist: "Charly García", year: 1982, spotify: "https://open.spotify.com/track/0k9SjJ6i1FTPjc3qaqisGT" },
-                { title: "Demoliendo Hoteles", artist: "Charly García", year: 1984, spotify: "https://open.spotify.com/track/2fDsE0P2MVlCMFMaQOA85U" },
-                { title: "Lamento Boliviano", artist: "Enanitos Verdes", year: 1994, spotify: "https://open.spotify.com/track/1aaoVBOq80hyIGfgNPVLFj" },
-                { title: "Te Quiero Tanto", artist: "Enanitos Verdes", year: 1986, spotify: "https://open.spotify.com/track/2Qoh0cNGlJRVlBxPxnxVKG" },
-                { title: "Ji Ji Ji", artist: "Patricio Rey y sus Redonditos de Ricota", year: 1986, spotify: "https://open.spotify.com/track/1sBqwMxADzJlHuloFb3RBV" },
-                { title: "Luna de Miel en la Mano", artist: "Virus", year: 1984, spotify: "https://open.spotify.com/track/5lOiHoVBEI1fKa5dI0SOJZ" }
+                { title: "De Música Ligera", artist: "Soda Stereo", year: 1990, spotify: "https://open.spotify.com/track/370eSVFKZQ8O2lYLKJLURH" },
+                { title: "Persiana Americana", artist: "Soda Stereo", year: 1986, spotify: "https://open.spotify.com/track/4iPA2yB8bK7T770EkkOi7s" },
+                { title: "En la Ciudad de la Furia", artist: "Soda Stereo", year: 1988, spotify: "https://open.spotify.com/track/0Pn6YVCTF9JCVZvSoLLBry" },
+                { title: "Cuando Pase el Temblor", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/2THqwJH5eWwGUhhOnlMhQL" },
+                { title: "Prófugos", artist: "Soda Stereo", year: 1986, spotify: "https://open.spotify.com/track/4ow3o0oRYmEmGbUynLGm4K" },
+                { title: "Nada Personal", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/2o7ZQUMqPOw2aIeeXgdPrG" },
+                { title: "Lamento Boliviano", artist: "Los Enanitos Verdes", year: 1994, spotify: "https://open.spotify.com/track/6Pur3hWy6Nzc27ilmsp5HA" },
+                { title: "Te Vi En Un Tren", artist: "Los Enanitos Verdes", year: 1986, spotify: "https://open.spotify.com/track/2tDLK90AxLg7sYntF0DNeR" },
+                { title: "La Muralla Verde", artist: "Los Enanitos Verdes", year: 1985, spotify: "https://open.spotify.com/track/75VIyhwBEXvPPpfOCgT2wR" },
+                { title: "Color Esperanza", artist: "Diego Torres", year: 2001, spotify: "https://open.spotify.com/track/4tCHj3jLWfkdIOwI8dXpRh" },
+                { title: "Trátame Suavemente", artist: "Soda Stereo", year: 1984, spotify: "https://open.spotify.com/track/78EM0OlDG5BLr1TQxODv1S" },
+                { title: "Juegos de Seducción", artist: "Soda Stereo", year: 1985, spotify: "https://open.spotify.com/track/3HFSxvWNZHqP00E8tN4I2A" }
             ],
             alternativa: [
                 // Grunge
@@ -599,7 +621,7 @@
             'todas': 'Todas',
             'hits': 'Hits',
             'bso': 'BSO Películas',
-            'disco': 'Disco',
+            'dance': 'Dance',
             'rock': 'Rock',
             'alternativa': 'Alternativa',
             'pop_espanol': 'Pop Español',
@@ -801,7 +823,46 @@
             document.getElementById('link-spotify').href = currentSong.spotify;
             
             setupQuestionScreen();
+            resetPlatformScreen();
             goToScreen('screen-platform');
+        }
+        
+        let countdownInterval = null;
+        let countdownSeconds = 30;
+        
+        function startCountdown() {
+            // Ocultar botones, mostrar cuenta atrás
+            document.getElementById('link-spotify').style.display = 'none';
+            document.getElementById('btn-listening').style.display = 'none';
+            document.getElementById('btn-ready').style.display = 'none';
+            document.getElementById('countdown-container').style.display = 'block';
+            document.getElementById('platform-subtitle').textContent = 'Escuchando...';
+            
+            countdownSeconds = 30;
+            document.getElementById('countdown-number').textContent = countdownSeconds;
+            
+            // Iniciar cuenta atrás
+            countdownInterval = setInterval(() => {
+                countdownSeconds--;
+                document.getElementById('countdown-number').textContent = countdownSeconds;
+                
+                if (countdownSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    goToScreen('screen-question');
+                }
+            }, 1000);
+        }
+        
+        function resetPlatformScreen() {
+            // Resetear la pantalla de plataforma para la siguiente canción
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            document.getElementById('link-spotify').style.display = 'block';
+            document.getElementById('btn-listening').style.display = 'inline-block';
+            document.getElementById('btn-ready').style.display = 'inline-block';
+            document.getElementById('countdown-container').style.display = 'none';
+            document.getElementById('platform-subtitle').textContent = 'Escucha y adivina';
         }
         
         function resetCategories() {
@@ -810,6 +871,7 @@
                 btn.classList.remove('selected');
             });
             document.getElementById('btn-start').style.display = 'none';
+            resetPlatformScreen();
             goToScreen('screen-categories');
         }
     </script>
