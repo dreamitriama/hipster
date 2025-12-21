@@ -270,7 +270,7 @@
 
         .switch-label {
             font-size: 0.95rem;
-            opacity: 0.8;
+            opacity: 0.5;
         }
 
         .switch-label.active {
@@ -296,7 +296,7 @@
             transition: 0.3s;
         }
 
-        .switch-track.random {
+        .switch-track.aleatorio {
             background-color: #1DB954;
         }
 
@@ -311,7 +311,7 @@
             transition: 0.3s;
         }
 
-        .switch-knob.random {
+        .switch-knob.aleatorio {
             left: 29px;
         }
 
@@ -342,36 +342,35 @@
 <body>
     <div class="container">
         
-        <!-- Pantalla 1: Categorías -->
+        <!-- Pantalla 1: Géneros -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 SOUNDit</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v31 - 1785 canciones</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v32 - 1785 canciones</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
                 <ol>
-                    <li>Elige categoría de música</li>
-                    <li>Elige qué tienes que adivinar</li>
-                    <li>Se abre Spotify → pon el móvil boca abajo</li>
-                    <li>Cuando creas saber la respuesta, vuelve</li>
+                    <li>Elige género de música</li>
+                    <li>Escucha la canción en Spotify</li>
+                    <li>Adivina según lo que te toque</li>
                 </ol>
             </div>
 
-            <!-- Switch Guiado/Aleatorio -->
+            <!-- Switch Elegir/Aleatorio -->
             <div class="switch-container">
-                <span class="switch-label" id="label-guiado">Guiado</span>
+                <span class="switch-label" id="label-elegir">Elegir</span>
                 <div class="switch" onclick="toggleSwitch()">
-                    <div class="switch-track" id="switch-track"></div>
-                    <div class="switch-knob" id="switch-knob"></div>
+                    <div class="switch-track aleatorio" id="switch-track"></div>
+                    <div class="switch-knob aleatorio" id="switch-knob"></div>
                 </div>
                 <span class="switch-label active" id="label-aleatorio">Aleatorio</span>
             </div>
 
-            <p class="subtitle">Elige una o varias categorías:</p>
+            <p class="subtitle">Elige uno o varios géneros:</p>
             <div class="categories">
                 <button class="category-btn todas" onclick="selectAllCategories()">
                     <span class="category-icon">🎲</span>
-                    <span>TODAS</span>
+                    <span>TODOS</span>
                 </button>
                 <button class="category-btn" onclick="toggleCategory('hits')" id="cat-hits">
                     <span class="category-icon">🎵</span>
@@ -404,16 +403,58 @@
             </button>
         </div>
 
-        <!-- Pantalla 2: Escuchar -->
+        <!-- Pantalla 2: Elegir pregunta (solo modo Elegir) -->
+        <div id="screen-question" class="screen">
+            <h2>¿Qué quieres adivinar?</h2>
+            
+            <div class="selected-info">
+                <span>Género:</span> <strong id="selected-genre-name">-</strong>
+            </div>
+
+            <div class="question-types">
+                <button class="question-btn" onclick="selectQuestion('year')">
+                    <span class="question-icon">📅</span>
+                    <span>Año exacto</span>
+                </button>
+                <button class="question-btn" onclick="selectQuestion('decade')">
+                    <span class="question-icon">📆</span>
+                    <span>Década</span>
+                </button>
+                <button class="question-btn" onclick="selectQuestion('near')">
+                    <span class="question-icon">🎯</span>
+                    <span>±3 años</span>
+                </button>
+                <button class="question-btn" onclick="selectQuestion('artist')">
+                    <span class="question-icon">🎤</span>
+                    <span>Artista/Grupo</span>
+                </button>
+                <button class="question-btn" onclick="selectQuestion('title')">
+                    <span class="question-icon">🎵</span>
+                    <span>Título canción</span>
+                </button>
+            </div>
+
+            <button class="btn btn-back" onclick="goToScreen('screen-categories')">
+                ← Cambiar género
+            </button>
+        </div>
+
+        <!-- Pantalla 3: Escuchar -->
         <div id="screen-platform" class="screen" style="align-items: center;">
             <h2 style="margin-bottom: 10px;">🎵 Nueva canción</h2>
             <p style="opacity: 0.7; margin-bottom: 15px;" id="platform-subtitle">Escucha y adivina</p>
             
-            <div class="listen-instructions">
+            <div class="listen-instructions" id="listen-instructions">
                 <p>📱 <strong>Dale la vuelta al móvil</strong> cuando empiece la canción.</p>
                 <p>⏱️ Calcula unos <strong>30 segundos</strong> y vuelve a esta pantalla.</p>
                 <p>✅ Pulsa <strong>"Ya he escuchado"</strong> cuando estés listo.</p>
                 <p>💡 Si eres rápido, pulsa <strong>"Escuchando..."</strong> para ver la cuenta atrás.</p>
+            </div>
+            
+            <!-- Info de qué hay que adivinar (modo Elegir) -->
+            <div id="question-reminder" style="display: none; background: rgba(240, 147, 251, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                <span style="opacity: 0.7;">Tienes que adivinar:</span>
+                <div style="font-size: 1.3rem; font-weight: bold; color: #f093fb;" id="question-reminder-text">-</div>
             </div>
             
             <a id="link-spotify" href="#" class="btn" style="display: block; text-align: center; font-size: 1.4rem; padding: 25px 50px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%); text-decoration: none; width: 80%; max-width: 300px;">
@@ -424,7 +465,7 @@
                 🎵 Escuchando...
             </button>
             
-            <button id="btn-ready" class="btn" onclick="skipToQuestion()" style="margin-top: 15px; background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%); font-size: 1.1rem; padding: 18px 40px; width: 80%; max-width: 300px;">
+            <button id="btn-ready" class="btn" onclick="showAnswer()" style="margin-top: 15px; background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%); font-size: 1.1rem; padding: 18px 40px; width: 80%; max-width: 300px;">
                 ✓ Ya he escuchado
             </button>
             
@@ -442,48 +483,8 @@
                 </button>
             </div>
             
-            <button class="btn btn-back" onclick="resetCategories()" style="margin-top: 20px; width: 80%; max-width: 300px;">
-                ← Cambiar categoría
-            </button>
-        </div>
-
-        <!-- Pantalla 3: Elegir pregunta -->
-        <div id="screen-question" class="screen">
-            <h2>¿Qué hay que adivinar?</h2>
-            
-            <div class="selected-info">
-                <span>Categoría:</span> <strong id="selected-category-name">-</strong>
-            </div>
-
-            <div class="question-types">
-                <button class="question-btn" onclick="selectQuestion('year')">
-                    <span class="question-icon">📅</span>
-                    <span>Año exacto</span>
-                </button>
-                <button class="question-btn" onclick="selectQuestion('decade')" id="btn-decade">
-                    <span class="question-icon">📆</span>
-                    <span>Década</span>
-                </button>
-                <button class="question-btn" onclick="selectQuestion('near')">
-                    <span class="question-icon">🎯</span>
-                    <span>±3 años</span>
-                </button>
-                <button class="question-btn" onclick="selectQuestion('artist')">
-                    <span class="question-icon">🎤</span>
-                    <span>Artista/Grupo</span>
-                </button>
-                <button class="question-btn" onclick="selectQuestion('title')">
-                    <span class="question-icon">🎵</span>
-                    <span>Título canción</span>
-                </button>
-                <button class="question-btn" onclick="selectQuestion('all')" style="background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%);">
-                    <span class="question-icon">👁️</span>
-                    <span>Ver todo</span>
-                </button>
-            </div>
-
-            <button class="btn btn-back" onclick="goToScreen('screen-platform')">
-                ← Volver a escuchar
+            <button class="btn btn-back" onclick="goBackFromPlatform()" style="margin-top: 20px; width: 80%; max-width: 300px;">
+                ← Volver
             </button>
         </div>
 
@@ -522,8 +523,8 @@
                 <button class="btn btn-show-all" id="btn-show-all" onclick="showAllInfo()">
                     👁️ Ver toda la info
                 </button>
-                <button class="btn btn-back" onclick="resetCategories()">
-                    ← Cambiar categoría
+                <button class="btn btn-back" onclick="resetGame()">
+                    ← Cambiar género
                 </button>
             </div>
         </div>
@@ -2378,18 +2379,18 @@
             isRandomMode = !isRandomMode;
             const track = document.getElementById('switch-track');
             const knob = document.getElementById('switch-knob');
-            const labelGuiado = document.getElementById('label-guiado');
+            const labelElegir = document.getElementById('label-elegir');
             const labelAleatorio = document.getElementById('label-aleatorio');
             
             if (isRandomMode) {
-                track.classList.add('random');
-                knob.classList.add('random');
+                track.classList.add('aleatorio');
+                knob.classList.add('aleatorio');
                 labelAleatorio.classList.add('active');
-                labelGuiado.classList.remove('active');
+                labelElegir.classList.remove('active');
             } else {
-                track.classList.remove('random');
-                knob.classList.remove('random');
-                labelGuiado.classList.add('active');
+                track.classList.remove('aleatorio');
+                knob.classList.remove('aleatorio');
+                labelElegir.classList.add('active');
                 labelAleatorio.classList.remove('active');
             }
         }
@@ -2422,8 +2423,32 @@
         function startWithSelection() {
             if (selectedCategories.length === 0) return;
             
-            currentCategory = selectedCategories.length === 1 ? selectedCategories[0] : 'mixed';
+            // Mostrar nombre del género
+            if (selectedCategories.length === 1) {
+                document.getElementById('selected-genre-name').textContent = categoryNames[selectedCategories[0]];
+            } else {
+                document.getElementById('selected-genre-name').textContent = selectedCategories.length + ' géneros';
+            }
             
+            if (isRandomMode) {
+                // Modo Aleatorio: ir directo a escuchar
+                pickNewSong();
+                setupPlatformScreen();
+                goToScreen('screen-platform');
+            } else {
+                // Modo Elegir: primero elegir qué adivinar
+                goToScreen('screen-question');
+            }
+        }
+
+        function selectQuestion(question) {
+            currentQuestion = question;
+            pickNewSong();
+            setupPlatformScreen();
+            goToScreen('screen-platform');
+        }
+
+        function pickNewSong() {
             let availableSongs = [];
             selectedCategories.forEach(cat => {
                 if (songs[cat]) {
@@ -2444,23 +2469,24 @@
             playedSongs.push(currentSong);
             
             document.getElementById('link-spotify').href = currentSong.spotify;
-            
-            if (selectedCategories.length === 1) {
-                document.getElementById('selected-category-name').textContent = categoryNames[selectedCategories[0]];
-            } else {
-                document.getElementById('selected-category-name').textContent = selectedCategories.length + ' categorías';
-            }
-            
-            setupQuestionScreen();
-            goToScreen('screen-platform');
         }
 
-        function setupQuestionScreen() {
+        function setupPlatformScreen() {
             document.getElementById('countdown-container').style.display = 'none';
             document.getElementById('btn-listening').style.display = 'inline-block';
             document.getElementById('btn-ready').style.display = 'inline-block';
             document.getElementById('link-spotify').style.display = 'block';
             document.getElementById('btn-skip').style.display = 'inline-block';
+            document.getElementById('listen-instructions').style.display = 'block';
+            document.getElementById('countdown-number').style.color = 'white';
+            
+            // Mostrar qué hay que adivinar en modo Elegir
+            if (!isRandomMode && currentQuestion) {
+                document.getElementById('question-reminder').style.display = 'block';
+                document.getElementById('question-reminder-text').textContent = questionLabels[currentQuestion];
+            } else {
+                document.getElementById('question-reminder').style.display = 'none';
+            }
             
             if (countdownInterval) {
                 clearInterval(countdownInterval);
@@ -2473,15 +2499,17 @@
             document.getElementById('btn-ready').style.display = 'none';
             document.getElementById('link-spotify').style.display = 'none';
             document.getElementById('btn-skip').style.display = 'none';
+            document.getElementById('listen-instructions').style.display = 'none';
+            document.getElementById('question-reminder').style.display = 'none';
             document.getElementById('countdown-container').style.display = 'block';
             
+            // En modo aleatorio, elegir pregunta al azar
             if (isRandomMode) {
                 const questions = ['year', 'decade', 'artist', 'title'];
                 currentQuestion = questions[Math.floor(Math.random() * questions.length)];
-                document.getElementById('random-question-display').textContent = '¿' + questionLabels[currentQuestion] + '?';
-            } else {
-                document.getElementById('random-question-display').textContent = '';
             }
+            
+            document.getElementById('random-question-display').textContent = '¿' + questionLabels[currentQuestion] + '?';
             
             let seconds = 30;
             document.getElementById('countdown-number').textContent = seconds;
@@ -2496,11 +2524,7 @@
                 
                 if (seconds <= 0) {
                     clearInterval(countdownInterval);
-                    if (isRandomMode) {
-                        showAnswer();
-                    } else {
-                        goToScreen('screen-question');
-                    }
+                    showAnswer();
                 }
             }, 1000);
         }
@@ -2510,35 +2534,29 @@
                 clearInterval(countdownInterval);
                 countdownInterval = null;
             }
-            
-            if (isRandomMode && currentQuestion) {
-                showAnswer();
-            } else {
-                goToScreen('screen-question');
-            }
+            showAnswer();
         }
 
-        function skipToQuestion() {
+        function goBackFromPlatform() {
             if (countdownInterval) {
                 clearInterval(countdownInterval);
                 countdownInterval = null;
             }
             
             if (isRandomMode) {
-                const questions = ['year', 'decade', 'artist', 'title'];
-                currentQuestion = questions[Math.floor(Math.random() * questions.length)];
-                showAnswer();
+                resetGame();
             } else {
                 goToScreen('screen-question');
             }
         }
 
-        function selectQuestion(question) {
-            currentQuestion = question;
-            showAnswer();
-        }
-
         function showAnswer() {
+            // Si es modo aleatorio y no hay pregunta, elegir una
+            if (isRandomMode && !currentQuestion) {
+                const questions = ['year', 'decade', 'artist', 'title'];
+                currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+            }
+            
             document.getElementById('countdown-number').style.color = 'white';
             
             const labels = {
@@ -2546,8 +2564,7 @@
                 'decade': 'Década',
                 'near': 'Año (±3)',
                 'artist': 'Artista',
-                'title': 'Título',
-                'all': 'Información completa'
+                'title': 'Título'
             };
             
             document.getElementById('answer-label').textContent = labels[currentQuestion] || 'Respuesta';
@@ -2569,11 +2586,6 @@
                 case 'title':
                     answerValue = currentSong.title;
                     break;
-                case 'all':
-                    answerValue = currentSong.title;
-                    document.getElementById('full-info').classList.add('visible');
-                    document.getElementById('btn-show-all').style.display = 'none';
-                    break;
             }
             
             document.getElementById('answer-value').textContent = answerValue;
@@ -2582,10 +2594,8 @@
             document.getElementById('full-year').textContent = currentSong.year;
             document.getElementById('full-decade').textContent = getDecade(currentSong.year);
             
-            if (currentQuestion !== 'all') {
-                document.getElementById('full-info').classList.remove('visible');
-                document.getElementById('btn-show-all').style.display = 'block';
-            }
+            document.getElementById('full-info').classList.remove('visible');
+            document.getElementById('btn-show-all').style.display = 'block';
             
             goToScreen('screen-answer');
         }
@@ -2596,32 +2606,15 @@
         }
 
         function nextSong() {
-            let availableSongs = [];
-            selectedCategories.forEach(cat => {
-                if (songs[cat]) {
-                    availableSongs = availableSongs.concat(songs[cat]);
-                }
-            });
-            
-            let unplayedSongs = availableSongs.filter(song => 
-                !playedSongs.some(played => played.title === song.title && played.artist === song.artist)
-            );
-            
-            if (unplayedSongs.length === 0) {
-                playedSongs = [];
-                unplayedSongs = availableSongs;
+            if (isRandomMode) {
+                currentQuestion = null; // Reset para que elija nueva pregunta
             }
-            
-            currentSong = unplayedSongs[Math.floor(Math.random() * unplayedSongs.length)];
-            playedSongs.push(currentSong);
-            
-            document.getElementById('link-spotify').href = currentSong.spotify;
-            
-            setupQuestionScreen();
+            pickNewSong();
+            setupPlatformScreen();
             goToScreen('screen-platform');
         }
 
-        function resetCategories() {
+        function resetGame() {
             if (countdownInterval) {
                 clearInterval(countdownInterval);
                 countdownInterval = null;
@@ -2632,13 +2625,10 @@
                 if (btn) btn.classList.remove('selected');
             });
             selectedCategories = [];
+            currentQuestion = null;
             document.getElementById('btn-start').style.display = 'none';
             goToScreen('screen-categories');
         }
-
-        // Initialize switch state
-        document.getElementById('switch-track').classList.add('random');
-        document.getElementById('switch-knob').classList.add('random');
     </script>
 </body>
 </html>
