@@ -257,7 +257,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v23</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v25</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -319,7 +319,18 @@
         <!-- Pantalla 2: Elegir plataforma y escuchar -->
         <div id="screen-platform" class="screen" style="align-items: center;">
             <h2 style="margin-bottom: 10px;">🎵 Nueva canción</h2>
-            <p style="opacity: 0.7; margin-bottom: 30px;" id="platform-subtitle">Escucha y adivina</p>
+            <p style="opacity: 0.7; margin-bottom: 20px;" id="platform-subtitle">Escucha y adivina</p>
+            
+            <!-- Switch aleatorio/guiado -->
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 0.9rem;">
+                <span style="opacity: 0.7;">Guiado</span>
+                <label style="position: relative; display: inline-block; width: 50px; height: 28px;">
+                    <input type="checkbox" id="switch-random" checked style="opacity: 0; width: 0; height: 0;">
+                    <span onclick="toggleSwitch()" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1DB954; border-radius: 28px; transition: 0.3s;"></span>
+                    <span onclick="toggleSwitch()" id="switch-knob" style="position: absolute; content: ''; height: 22px; width: 22px; left: 25px; bottom: 3px; background-color: white; border-radius: 50%; transition: 0.3s;"></span>
+                </label>
+                <span style="opacity: 0.7;">Aleatorio</span>
+            </div>
             
             <a id="link-spotify" href="#" class="btn" style="display: block; text-align: center; font-size: 1.4rem; padding: 25px 50px; background: linear-gradient(145deg, #1DB954 0%, #1ed760 100%); text-decoration: none; width: 80%; max-width: 300px;">
                 🎧 Escuchar
@@ -329,14 +340,22 @@
                 🎵 Escuchando...
             </button>
             
-            <button id="btn-ready" class="btn" onclick="goToScreen('screen-question')" style="margin-top: 15px; background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%); font-size: 1.1rem; padding: 18px 40px; width: 80%; max-width: 300px;">
+            <button id="btn-ready" class="btn" onclick="skipToQuestion()" style="margin-top: 15px; background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%); font-size: 1.1rem; padding: 18px 40px; width: 80%; max-width: 300px;">
                 ✓ Ya he escuchado
+            </button>
+            
+            <button id="btn-skip" class="btn" onclick="nextSong()" style="margin-top: 10px; background: rgba(255,255,255,0.1); font-size: 0.9rem; padding: 12px 30px; width: 80%; max-width: 300px;">
+                ⏭️ No funciona, saltar
             </button>
             
             <!-- Cuenta atrás (oculta inicialmente) -->
             <div id="countdown-container" style="display: none; margin-top: 30px; text-align: center;">
+                <div id="random-question-display" style="font-size: 1.2rem; margin-bottom: 15px; color: #f093fb;"></div>
                 <div style="font-size: 4rem; font-weight: bold;" id="countdown-number">30</div>
                 <p style="opacity: 0.7;">segundos</p>
+                <button class="btn" onclick="resolveNow()" style="margin-top: 20px; background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%); font-size: 1.1rem; padding: 15px 40px;">
+                    ✓ Resolver
+                </button>
             </div>
             
             <button class="btn btn-back" onclick="resetCategories()" style="margin-top: 20px; width: 80%; max-width: 300px;">
@@ -842,14 +861,66 @@
         
         let countdownInterval = null;
         let countdownSeconds = 30;
+        let isRandomMode = true;
+        let randomQuestion = null;
+        
+        function toggleSwitch() {
+            const switchEl = document.getElementById('switch-random');
+            const knob = document.getElementById('switch-knob');
+            switchEl.checked = !switchEl.checked;
+            isRandomMode = switchEl.checked;
+            
+            if (isRandomMode) {
+                knob.style.left = '25px';
+                knob.parentElement.previousElementSibling.nextElementSibling.style.backgroundColor = '#1DB954';
+            } else {
+                knob.style.left = '3px';
+                knob.parentElement.previousElementSibling.nextElementSibling.style.backgroundColor = '#667eea';
+            }
+        }
+        
+        function getRandomQuestion() {
+            const questions = ['year', 'decade', 'artist', 'title'];
+            // Añadir 'movie' si la canción tiene película/serie
+            if (currentSong.movie) {
+                questions.push('movie');
+            }
+            return questions[Math.floor(Math.random() * questions.length)];
+        }
+        
+        function skipToQuestion() {
+            if (isRandomMode) {
+                randomQuestion = getRandomQuestion();
+                currentQuestion = randomQuestion;
+                showAnswer();
+            } else {
+                goToScreen('screen-question');
+            }
+        }
         
         function startCountdown() {
             // Ocultar botones, mostrar cuenta atrás
             document.getElementById('link-spotify').style.display = 'none';
             document.getElementById('btn-listening').style.display = 'none';
             document.getElementById('btn-ready').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
             document.getElementById('countdown-container').style.display = 'block';
             document.getElementById('platform-subtitle').textContent = 'Escuchando...';
+            
+            // Si es modo aleatorio, mostrar qué hay que adivinar
+            if (isRandomMode) {
+                randomQuestion = getRandomQuestion();
+                const questionNames = {
+                    'year': '📅 AÑO EXACTO',
+                    'decade': '📆 DÉCADA',
+                    'artist': '🎤 ARTISTA',
+                    'title': '🎵 TÍTULO',
+                    'movie': '🎬 PELÍCULA/SERIE'
+                };
+                document.getElementById('random-question-display').textContent = 'Adivina: ' + questionNames[randomQuestion];
+            } else {
+                document.getElementById('random-question-display').textContent = '';
+            }
             
             countdownSeconds = 30;
             document.getElementById('countdown-number').textContent = countdownSeconds;
@@ -861,9 +932,26 @@
                 
                 if (countdownSeconds <= 0) {
                     clearInterval(countdownInterval);
-                    goToScreen('screen-question');
+                    if (isRandomMode) {
+                        currentQuestion = randomQuestion;
+                        showAnswer();
+                    } else {
+                        goToScreen('screen-question');
+                    }
                 }
             }, 1000);
+        }
+        
+        function resolveNow() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            if (isRandomMode) {
+                currentQuestion = randomQuestion;
+                showAnswer();
+            } else {
+                goToScreen('screen-question');
+            }
         }
         
         function resetPlatformScreen() {
@@ -874,6 +962,7 @@
             document.getElementById('link-spotify').style.display = 'block';
             document.getElementById('btn-listening').style.display = 'inline-block';
             document.getElementById('btn-ready').style.display = 'inline-block';
+            document.getElementById('btn-skip').style.display = 'inline-block';
             document.getElementById('countdown-container').style.display = 'none';
             document.getElementById('platform-subtitle').textContent = 'Escucha y adivina';
         }
