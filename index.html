@@ -257,7 +257,7 @@
         <!-- Pantalla 1: Categorías -->
         <div id="screen-categories" class="screen active">
             <h1>🎵 Hitster</h1>
-            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v22</small></p>
+            <p class="subtitle">El juego musical infinito <br><small style="opacity: 0.5;">v23</small></p>
             
             <div class="instructions">
                 <strong>¿Cómo jugar?</strong>
@@ -376,6 +376,10 @@
                 <button class="question-btn" onclick="selectQuestion('movie')" id="btn-movie" style="display: none;">
                     <span class="question-icon">🎬</span>
                     <span>Película/Serie</span>
+                </button>
+                <button class="question-btn" onclick="selectQuestion('all')" style="background: linear-gradient(145deg, #f093fb 0%, #f5576c 100%);">
+                    <span class="question-icon">👁️</span>
+                    <span>Ver todo</span>
                 </button>
             </div>
 
@@ -779,6 +783,10 @@
                     labelEl.textContent = 'Película/Serie';
                     valueEl.textContent = currentSong.movie || 'Desconocida';
                     break;
+                case 'all':
+                    labelEl.textContent = 'Toda la info';
+                    valueEl.textContent = '';
+                    break;
             }
             
             // Preparar info completa (oculta)
@@ -795,9 +803,14 @@
                 document.getElementById('full-movie-container').style.display = 'none';
             }
             
-            // Ocultar info completa
-            document.getElementById('full-info').classList.remove('visible');
-            document.getElementById('btn-show-all').style.display = 'block';
+            // Si eligió "Ver todo", mostrar directamente
+            if (currentQuestion === 'all') {
+                document.getElementById('full-info').classList.add('visible');
+                document.getElementById('btn-show-all').style.display = 'none';
+            } else {
+                document.getElementById('full-info').classList.remove('visible');
+                document.getElementById('btn-show-all').style.display = 'block';
+            }
             
             goToScreen('screen-answer');
         }
